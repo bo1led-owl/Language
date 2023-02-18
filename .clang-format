@@ -1,0 +1,3 @@
+BasedOnStyle: LLVM
+ColumnLimit: 90
+AccessModifierOffset: -1

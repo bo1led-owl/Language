@@ -2,38 +2,34 @@
 #define TOKEN_HH
 
 #include <cassert>
-#include <memory>
 #include <string>
 
 #include "Lex/TokenKind.hh"
+
 #include "Types.hh"
 
+namespace Language {
 class Token {
-protected:
+ protected:
   TokenKind Kind;
-  void *Data;
 
-public:
-  Token() : Kind(TokenKind::Unknown), Data(nullptr) {}
+ public:
+  Token() : Kind(TokenKind::Unknown) {}
   Token(TokenKind K) : Kind(K) {}
 
-  Token(const Token &) = delete;
   virtual ~Token() = default;
 
   TokenKind GetKind() const { return Kind; }
 
   virtual i32 GetNumberData() const {
-    assert(Kind == TokenKind::Number);
+    assert(Kind == TokenKind::Number && "The token is not a NumberToken");
     return 0;
   }
 
   virtual std::string_view GetIdentifierData() const {
-    assert(Kind == TokenKind::Identifier);
+    assert(Kind == TokenKind::Identifier && "The token is not an IdentifierToken");
     return "";
   }
-
-  void SetData(void *D) { Data = D; }
-  bool HasData() const { return Data != nullptr; }
 
   bool Is(TokenKind K) const { return Kind == K; }
   bool IsNot(TokenKind K) const { return Kind != K; }
@@ -42,9 +38,7 @@ public:
 class NumberToken : public Token {
   i32 Data;
 
-public:
-  NumberToken(const NumberToken &) = delete;
-
+ public:
   NumberToken() : Token(TokenKind::Number) {}
   NumberToken(i32 D) : Token(TokenKind::Number), Data(D) {}
 
@@ -54,15 +48,12 @@ public:
 class IdentifierToken : public Token {
   std::string Data;
 
-public:
-  IdentifierToken(const IdentifierToken &) = delete;
-
+ public:
   IdentifierToken() : Token(TokenKind::Identifier) {}
   IdentifierToken(std::string D) : Token(TokenKind::Identifier), Data(D) {}
 
-  std::string_view GetIdentifierData() const override {
-    return std::string_view{Data};
-  }
+  std::string_view GetIdentifierData() const override { return std::string_view{Data}; }
 };
+} // namespace Language
 
 #endif

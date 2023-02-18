@@ -1,25 +1,28 @@
+#include <memory>
+#include <string>
+
 #include "Lex/Lexer.hh"
 #include "Lex/Token.hh"
 #include "Lex/TokenKind.hh"
 
-#include <memory>
-#include <string>
-
 #include "Types.hh"
 
+namespace Language {
 std::unique_ptr<Token> Lexer::LexToken() {
-  if (GetCurChar() == EOF || GetCurChar() == '\0') {
-    return std::make_unique<Token>(TokenKind::EndOfFile);
+  if (CurChar == EOF || CurChar == '\0') {
+    return std::make_unique<Token>(TokenKind::EndOfInput);
   }
 
-  while (isspace(GetCurChar())) {
+  // skipping spaces
+  while (isspace(CurChar)) {
     Advance();
   }
 
-  if (std::isalpha(GetCurChar())) {
-    std::string IdentifierString{GetCurChar()};
+  // lex identifiers and keywords
+  if (std::isalpha(CurChar)) {
+    std::string IdentifierString{CurChar};
     while (std::isalnum(Advance())) {
-      IdentifierString += GetCurChar();
+      IdentifierString += CurChar;
     }
 
     if (IdentifierString == "fn") {
@@ -29,14 +32,22 @@ std::unique_ptr<Token> Lexer::LexToken() {
     return std::make_unique<IdentifierToken>(IdentifierString);
   }
 
-  if (std::isdigit(GetCurChar())) {
+  // lex numbers
+  if (std::isdigit(CurChar)) {
     std::string Number;
 
     do {
-      Number += GetCurChar();
+      Number += CurChar;
     } while (std::isdigit(Advance()));
 
-    return std::make_unique<NumberToken>(stoi(Number));
+    return std::make_unique<NumberToken>(std::stoi(Number));
   }
+
   return std::make_unique<Token>(TokenKind::Unknown);
 }
+
+inline char Lexer::Advance() {
+  CurChar = Input.get();
+  return CurChar;
+}
+} // namespace Language

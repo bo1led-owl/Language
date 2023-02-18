@@ -2,7 +2,7 @@
 #define EXPR_HH
 
 class Expr {
-public:
+ public:
   virtual ~Expr() {}
 };
 

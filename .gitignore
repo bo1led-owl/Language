@@ -1,2 +1,9 @@
 /build
+
+# temporary or test text files
+*.txt
+
+# IDE and language server directories
 /.vscode
+/.idea
+/.cache

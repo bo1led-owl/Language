@@ -1,17 +1,17 @@
+#include <fstream>
 #include <iostream>
 
 #include "Lex/Lexer.hh"
+
 #include "Types.hh"
 
-i32 main() {
-  std::string input{"1 aboba 2 3 fn 4\0"};
-  Lexer lex{input};
+i32 main(i32 argc, char **argv) {
+  using TokenKind = Language::TokenKind;
+
+  Language::Lexer lexer{(argc > 1) ? argv[1] : "input.txt"};
 
   while (true) {
-    const auto t = lex.LexToken();
-    if (t->Is(TokenKind::EndOfFile)) {
-      break;
-    }
+    const auto t = lexer.LexToken();
 
     switch (t->GetKind()) {
     case TokenKind::Number:
@@ -23,11 +23,24 @@ i32 main() {
     case TokenKind::Fn:
       std::cout << "Fn\n";
       break;
-    case TokenKind::EndOfFile:
-      std::cout << "EOF\n";
-      break;
     case TokenKind::Unknown:
       std::cout << "Unknown\n";
+      return 0;
+      break;
+    case TokenKind::Plus:
+      std::cout << "Plus\n";
+      break;
+    case TokenKind::Minus:
+      std::cout << "Minus\n";
+      break;
+    case TokenKind::Asterisk:
+      std::cout << "Asterisk\n";
+      break;
+    case TokenKind::Slash:
+      std::cout << "Slash\n";
+      break;
+    case TokenKind::EndOfInput:
+      return 0;
       break;
     }
   }
