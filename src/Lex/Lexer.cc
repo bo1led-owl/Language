@@ -4,13 +4,18 @@
 #include "Lex/Lexer.hh"
 #include "Lex/Token.hh"
 #include "Lex/TokenKind.hh"
-
 #include "Types.hh"
 
 namespace Language {
+namespace Lex {
 std::unique_ptr<Token> Lexer::LexToken() {
   if (CurChar == EOF || CurChar == '\0') {
     return std::make_unique<Token>(TokenKind::EndOfInput);
+  }
+
+  if (CurChar == '\n' || CurChar == '\r') {
+    Advance();
+    return std::make_unique<Token>(TokenKind::Newline);
   }
 
   // skipping spaces
@@ -18,36 +23,39 @@ std::unique_ptr<Token> Lexer::LexToken() {
     Advance();
   }
 
+  if (CurChar == '(' || CurChar == ')') {
+    char prevChar = CurChar;
+    Advance();
+    return std::make_unique<Token>((prevChar == '(') ? TokenKind::LParen
+                                                     : TokenKind::RParen);
+  }
+
   // lex identifiers and keywords
   if (std::isalpha(CurChar)) {
-    std::string IdentifierString{CurChar};
+    std::string identifierString{CurChar};
     while (std::isalnum(Advance())) {
-      IdentifierString += CurChar;
+      identifierString += CurChar;
     }
 
-    if (IdentifierString == "fn") {
+    if (identifierString == "fn") {
       return std::make_unique<Token>(TokenKind::Fn);
     }
 
-    return std::make_unique<IdentifierToken>(IdentifierString);
+    return std::make_unique<IdentifierToken>(identifierString);
   }
 
   // lex numbers
   if (std::isdigit(CurChar)) {
-    std::string Number;
+    std::string number;
 
     do {
-      Number += CurChar;
+      number += CurChar;
     } while (std::isdigit(Advance()));
 
-    return std::make_unique<NumberToken>(std::stoi(Number));
+    return std::make_unique<NumberToken>(std::stoi(number));
   }
 
   return std::make_unique<Token>(TokenKind::Unknown);
 }
-
-inline char Lexer::Advance() {
-  CurChar = Input.get();
-  return CurChar;
-}
+} // namespace Lex
 } // namespace Language

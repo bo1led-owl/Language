@@ -4,24 +4,30 @@
 #include "Types.hh"
 
 namespace Language {
+namespace Lex {
+/// Enum of kinds of tokens
 enum TokenKind : u8 {
-  EndOfInput, // 0
-  Unknown,    // 1
+  EndOfInput,
+  Unknown,
+  Newline,
 
   // keywords
-  Fn, // 2
+  Fn,
 
-  Identifier, // 3
+  Identifier,
 
   // literals
-  Number, // 4
+  Number,
 
   // symbols
-  Plus,     // 5
-  Minus,    // 6
-  Asterisk, // 7
-  Slash,    // 8
+  LParen,   // (
+  RParen,   // )
+  Plus,     // +
+  Minus,    // -
+  Asterisk, // *
+  Slash,    // /
 };
-}
+} // namespace Lex
+} // namespace Language
 
 #endif

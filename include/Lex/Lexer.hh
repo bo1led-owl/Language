@@ -6,22 +6,25 @@
 #include <string>
 
 #include "Lex/Token.hh"
-
 #include "Types.hh"
 
 namespace Language {
+namespace Lex {
+/// Class for lexing tokens from code
 class Lexer {
- private:
   std::ifstream Input;
   char CurChar;
 
-  inline char Advance();
+  /// Move to the next character from the input and return it
+  inline char Advance() { return CurChar = Input.get(); }
 
  public:
-  Lexer(std::string path) : Input(std::ifstream{path}), CurChar(Input.get()) {}
+  Lexer(const std::string &path) : Input(std::ifstream{path}), CurChar(Input.get()) {}
 
+  /// Lex next token from input
   std::unique_ptr<Token> LexToken();
 };
+} // namespace Lex
 } // namespace Language
 
 #endif
