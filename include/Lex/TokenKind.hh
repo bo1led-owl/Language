@@ -13,19 +13,29 @@ enum TokenKind : u8 {
 
   // keywords
   Fn,
+  Let,
 
   Identifier,
 
   // literals
   Number,
 
-  // symbols
-  LParen,   // (
-  RParen,   // )
-  Plus,     // +
-  Minus,    // -
-  Asterisk, // *
-  Slash,    // /
+  // characters
+  Comma,       // ,
+  Fullstop,    // .
+  LParen,      // (
+  RParen,      // )
+  LCurBracket, // {
+  RCurBracket, // }
+  LSqBracket,  // [
+  RSqBracket,  // ]
+  Plus,        // +
+  Minus,       // -
+  Asterisk,    // *
+  Slash,       // /
+  Equals,      // =
+  LArrow,      // <
+  RArrow,      // >
 };
 } // namespace Lex
 } // namespace Language

@@ -8,27 +8,41 @@
 
 namespace Language {
 namespace Lex {
-std::unique_ptr<Token> Lexer::LexToken() {
-  if (CurChar == EOF || CurChar == '\0') {
-    return std::make_unique<Token>(TokenKind::EndOfInput);
+/// Macro for matching single characters and tokens
+#define REGISTER_TOKEN(Char, Kind)                                                       \
+  if (CurChar == Char) {                                                                 \
+    Advance();                                                                           \
+    return std::make_unique<Token>(Kind);                                                \
   }
 
-  if (CurChar == '\n' || CurChar == '\r') {
-    Advance();
-    return std::make_unique<Token>(TokenKind::Newline);
-  }
+std::unique_ptr<Token> Lexer::LexToken() {
+  REGISTER_TOKEN(EOF, TokenKind::EndOfInput);
+  REGISTER_TOKEN('\0', TokenKind::EndOfInput);
+
+  REGISTER_TOKEN('\r', TokenKind::Newline);
+  REGISTER_TOKEN('\n', TokenKind::Newline);
 
   // skipping spaces
   while (isspace(CurChar)) {
     Advance();
   }
 
-  if (CurChar == '(' || CurChar == ')') {
-    char prevChar = CurChar;
-    Advance();
-    return std::make_unique<Token>((prevChar == '(') ? TokenKind::LParen
-                                                     : TokenKind::RParen);
-  }
+  REGISTER_TOKEN('(', TokenKind::LParen);
+  REGISTER_TOKEN(')', TokenKind::RParen);
+  REGISTER_TOKEN('{', TokenKind::LCurBracket);
+  REGISTER_TOKEN('}', TokenKind::RCurBracket);
+  REGISTER_TOKEN('[', TokenKind::LSqBracket);
+  REGISTER_TOKEN(']', TokenKind::RSqBracket);
+
+  REGISTER_TOKEN(',', TokenKind::Comma);
+  REGISTER_TOKEN('.', TokenKind::Fullstop);
+  REGISTER_TOKEN('+', TokenKind::Plus);
+  REGISTER_TOKEN('-', TokenKind::Minus);
+  REGISTER_TOKEN('*', TokenKind::Asterisk);
+  REGISTER_TOKEN('/', TokenKind::Slash);
+  REGISTER_TOKEN('=', TokenKind::Equals);
+  REGISTER_TOKEN('<', TokenKind::LArrow);
+  REGISTER_TOKEN('>', TokenKind::RArrow);
 
   // lex identifiers and keywords
   if (std::isalpha(CurChar)) {

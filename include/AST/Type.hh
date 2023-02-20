@@ -9,7 +9,7 @@ namespace AST {
 enum class DataType : u8 {
   Integer,
 };
-}
+} // namespace AST
 } // namespace Language
 
 #endif
