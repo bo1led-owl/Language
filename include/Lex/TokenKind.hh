@@ -23,6 +23,7 @@ enum TokenKind : u8 {
   // characters
   Comma,       // ,
   Fullstop,    // .
+  Colon,       // :
   LParen,      // (
   RParen,      // )
   LCurBracket, // {
@@ -34,8 +35,10 @@ enum TokenKind : u8 {
   Asterisk,    // *
   Slash,       // /
   Equals,      // =
-  LArrow,      // <
-  RArrow,      // >
+  LessThan,    // <
+  GreaterThan, // >
+  LeftArrow,   // <-
+  RightArrow,  // ->
 };
 } // namespace Lex
 } // namespace Language

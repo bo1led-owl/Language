@@ -6,8 +6,8 @@
 #include <vector>
 
 #include "AST/BinaryExprKind.hh"
+#include "AST/BuiltinTypes.hh"
 #include "AST/Stmt.hh"
-#include "AST/Type.hh"
 #include "Types.hh"
 
 namespace Language {

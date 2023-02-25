@@ -1,5 +1,8 @@
 /build
 
+# shell scripts
+*.sh
+
 # temporary or test text files
 *.txt
 

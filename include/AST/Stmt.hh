@@ -12,7 +12,7 @@ class Decl;
 /// Base AST statement class
 class Stmt {
  public:
-  virtual ~Stmt();
+  virtual ~Stmt() = default;
 };
 
 /// Integer literal statement class

@@ -16,9 +16,9 @@ class Token {
 
  public:
   Token(const TokenKind kind) : Kind(kind) {}
-
   virtual ~Token() = default;
 
+  void Print() const;
   TokenKind GetKind() const { return Kind; }
 
   virtual i32 GetNumberData() const {
@@ -41,6 +41,7 @@ class NumberToken : public Token {
 
  public:
   NumberToken(const i32 data) : Token(TokenKind::Number), Data(data) {}
+  void Print() const;
 
   i32 GetNumberData() const override { return Data; }
 };
@@ -50,8 +51,8 @@ class IdentifierToken : public Token {
   std::string Data;
 
  public:
-  IdentifierToken() : Token(TokenKind::Identifier) {}
   IdentifierToken(const std::string &data) : Token(TokenKind::Identifier), Data(data) {}
+  void Print() const;
 
   std::string GetIdentifierData() const override { return Data; }
 };
