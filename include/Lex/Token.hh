@@ -11,7 +11,6 @@ namespace Language {
 namespace Lex {
 /// Base token class
 class Token {
- protected:
   TokenKind Kind;
 
  public:
@@ -19,31 +18,30 @@ class Token {
   virtual ~Token() = default;
 
   void Print() const;
-  TokenKind GetKind() const { return Kind; }
+  inline TokenKind GetKind() const { return Kind; }
 
-  virtual i32 GetNumberData() const {
+  inline virtual std::string GetNumberData() const {
     assert(Kind == TokenKind::Number && "The token is not a NumberToken");
     return 0;
   }
 
-  virtual std::string GetIdentifierData() const {
+  inline virtual std::string GetIdentifierData() const {
     assert(Kind == TokenKind::Identifier && "The token is not an IdentifierToken");
     return "";
   }
 
-  bool Is(TokenKind otherKind) const { return Kind == otherKind; }
-  bool IsNot(TokenKind otherKind) const { return Kind != otherKind; }
+  inline bool Is(TokenKind otherKind) const { return Kind == otherKind; }
+  inline bool IsNot(TokenKind otherKind) const { return Kind != otherKind; }
 };
 
 /// Token class for numeric literals
 class NumberToken : public Token {
-  i32 Data;
+  std::string Data;
 
  public:
-  NumberToken(const i32 data) : Token(TokenKind::Number), Data(data) {}
-  void Print() const;
+  NumberToken(const std::string &data) : Token(TokenKind::Number), Data(data) {}
 
-  i32 GetNumberData() const override { return Data; }
+  inline std::string GetNumberData() const override { return Data; }
 };
 
 /// Token class for identifiers (string literals)
@@ -51,10 +49,9 @@ class IdentifierToken : public Token {
   std::string Data;
 
  public:
-  IdentifierToken(const std::string &data) : Token(TokenKind::Identifier), Data(data) {}
-  void Print() const;
+  IdentifierToken(std::string data) : Token(TokenKind::Identifier), Data(data) {}
 
-  std::string GetIdentifierData() const override { return Data; }
+  inline std::string GetIdentifierData() const override { return Data; }
 };
 } // namespace Lex
 } // namespace Language

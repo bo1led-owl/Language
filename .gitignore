@@ -1,7 +1,8 @@
 /build
 
-# shell scripts
+# helper scripts
 *.sh
+*.py
 
 # temporary or test text files
 *.txt

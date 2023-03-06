@@ -1,119 +1,49 @@
 #include <memory>
+#include <string>
+#include <unordered_set>
+#include <vector>
 
+#include "AST/Block.hh"
+#include "AST/Decl.hh"
+#include "AST/Expr.hh"
+#include "AST/LiteralExpr.hh"
+#include "AST/Stmt.hh"
+#include "Lex/Lexer.hh"
+#include "Lex/Token.hh"
+#include "Lex/TokenKind.hh"
 #include "Parse/Exception.hh"
 #include "Parse/Parser.hh"
 #include "Types.hh"
 
-#define THROW_IF_TOKEN_IS(Kind, Message)                                                 \
-  if (CurToken->Is(Kind)) {                                                              \
-    throw ParseException{Message};                                                       \
-  }
-
-#define THROW_IF_TOKEN_IS_NOT(Kind, Message)                                             \
-  if (CurToken->IsNot(Kind)) {                                                           \
-    throw ParseException{Message};                                                       \
-  }
-
 namespace Language {
 namespace Parse {
-std::vector<AST::Decl> Parser::Parse() {
-  std::vector<AST::Decl> AST;
+std::vector<std::shared_ptr<AST::Decl>> Parser::Parse() {
+  std::vector<std::shared_ptr<AST::Decl>> AST;
+
   while (CurToken->IsNot(Lex::TokenKind::EndOfInput)) {
     switch (CurToken->GetKind()) {
-    case Lex::TokenKind::Fn:
-      // skip fn token
+    case Lex::TokenKind::Newline:
       Advance();
-      ParseFnDecl();
       break;
-    case Lex::TokenKind::Let:
-      // skip let token
-      Advance();
-      ParseVarDecl();
-      break;
+
+    case Lex::TokenKind::Fn: {
+      std::shared_ptr<AST::FnDecl> decl{ParseFnDecl()};
+      AST.emplace_back(decl);
+      Functions[decl->GetName()] = decl;
+    } break;
+
+    case Lex::TokenKind::Let: {
+      std::shared_ptr<AST::VarDecl> decl{ParseVarDecl()};
+      AST.emplace_back(decl);
+      Variables[decl->GetName()] = decl;
+    } break;
+
     default:
-      throw ParseException{"Syntax error: expected function or variable declaration\n"};
+      throw ParseException{"Syntax error: expected function or variable declaration"};
     }
   }
 
   return AST;
-}
-
-std::unique_ptr<AST::Decl> Parser::ParseFnDecl() {
-  if (CurToken->IsNot(Lex::TokenKind::Identifier)) {
-    throw ParseException{"Syntax error: missing function name declaration\n"};
-  }
-
-  //* function name
-  std::string fnName = CurToken->GetIdentifierData();
-  // eat function name
-  Advance();
-
-  THROW_IF_TOKEN_IS_NOT(Lex::TokenKind::LParen,
-                        "Syntax error: expected function arguments\n")
-  // eat left parenthesis
-  Advance();
-
-  //* function args
-  std::vector<AST::FnDecl::Argument> fnArgs;
-  while (CurToken->IsNot(Lex::TokenKind::RParen)) {
-    THROW_IF_TOKEN_IS_NOT(Lex::TokenKind::Identifier,
-                          "Syntax error: missing function parameter name declaration")
-
-    std::string argName = CurToken->GetIdentifierData();
-    // eat argument name
-    Advance();
-
-    THROW_IF_TOKEN_IS_NOT(Lex::TokenKind::Colon,
-                          "Syntax error: missing function parameter type declaration")
-    // eat colon
-    Advance();
-
-    THROW_IF_TOKEN_IS_NOT(Lex::TokenKind::Identifier,
-                          "Syntax error: missing function parameter type declaration")
-
-    if (!TypeMap.contains(CurToken->GetIdentifierData())) {
-      throw ParseException{"Syntax error: unknown parameter type"};
-    }
-    AST::DataType argType{TypeMap[CurToken->GetIdentifierData()]};
-    // eat argument's type
-    Advance();
-
-    fnArgs.push_back(AST::FnDecl::Argument{argName, argType});
-  }
-
-  //* function return type
-  AST::DataType fnReturnType{AST::DataType::Void};
-  if (CurToken->Is(Lex::TokenKind::RightArrow)) {
-    // eat arrow (->)
-    Advance();
-
-    THROW_IF_TOKEN_IS_NOT(Lex::TokenKind::Identifier,
-                          "Syntax error: missing function return type")
-
-    if (!TypeMap.contains(CurToken->GetIdentifierData())) {
-      throw ParseException{"Syntax error: unknown function return type"};
-    }
-    fnReturnType = {TypeMap[CurToken->GetIdentifierData()]};
-
-    // eat return type
-    Advance();
-  }
-
-  //* function body
-  THROW_IF_TOKEN_IS_NOT(Lex::TokenKind::LCurBracket,
-                        "Syntax error: missing function body")
-  // eat left curly bracket
-  Advance();
-
-  std::unique_ptr<AST::Expr> fnBody = nullptr;
-  while (CurToken->IsNot(Lex::TokenKind::RCurBracket)) {
-    fnBody = ParseExpr(); // TODO: function body parsing
-  }
-
-  // eat rigth curly bracket
-  Advance();
-
-  return std::make_unique<AST::FnDecl>(fnName, fnArgs, fnReturnType, fnBody);
 }
 } // namespace Parse
 } // namespace Language

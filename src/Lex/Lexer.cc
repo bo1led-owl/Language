@@ -73,6 +73,7 @@ std::unique_ptr<Token> Lexer::LexToken() {
 
     REGISTER_STRING("fn", TokenKind::Fn)
     REGISTER_STRING("let", TokenKind::Let)
+    REGISTER_STRING("mut", TokenKind::Mut)
 
     return std::make_unique<IdentifierToken>(identifierString);
   }
@@ -85,7 +86,7 @@ std::unique_ptr<Token> Lexer::LexToken() {
       number += CurChar;
     } while (std::isdigit(Advance()));
 
-    return std::make_unique<NumberToken>(std::stoi(number));
+    return std::make_unique<NumberToken>(number);
   }
 
   return std::make_unique<Token>(TokenKind::Unknown);

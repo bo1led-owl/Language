@@ -19,7 +19,7 @@ class Lexer {
   inline char Advance() { return CurChar = Input.get(); }
 
  public:
-  Lexer(const std::string &path) : Input(std::ifstream{path}), CurChar(Input.get()) {}
+  Lexer(std::string path) : Input(std::ifstream{path}), CurChar(Input.get()) {}
 
   /// Lex next token from input
   std::unique_ptr<Token> LexToken();

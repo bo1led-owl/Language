@@ -39,6 +39,9 @@ void Token::Print() const {
   case TokenKind::Let:
     std::cout << "Let ";
     break;
+  case TokenKind::Mut:
+    std::cout << "Mut ";
+    break;
   case TokenKind::Comma:
     std::cout << ", ";
     break;

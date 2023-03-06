@@ -5,24 +5,26 @@
 #include <string>
 #include <vector>
 
-#include "AST/BuiltinTypes.hh"
+#include "AST/DeclBase.hh"
 #include "AST/Expr.hh"
 
 namespace Language {
 namespace AST {
-/// Base AST declaration class
-class Decl {
- public:
-  virtual ~Decl() = default;
-};
+class Block;
 
 /// Variable declaration class
 class VarDecl : public Decl {
-  std::string Name;
-  DataType Type;
+  bool Mutable;
+  // value is optional
+  std::unique_ptr<Expr> Value;
 
  public:
-  VarDecl(const std::string &name, DataType type) : Name(name), Type(type) {}
+  VarDecl(const std::string &name, const std::string &type, const bool mut,
+          std::unique_ptr<Expr> &value)
+      : Decl(name, type), Mutable(mut), Value(std::move(value)) {}
+
+  inline bool IsMutable() const { return Mutable; }
+  inline std::unique_ptr<Expr> &GetValue() { return Value; }
 };
 
 /// Function declaration class
@@ -30,22 +32,20 @@ class FnDecl : public Decl {
  public:
   struct Argument {
     std::string Name;
-    DataType Type;
+    const std::string &TypeName;
 
-    Argument(const std::string &name, DataType type) : Name(name), Type(type) {}
+    Argument(const std::string &name, const std::string &type)
+        : Name(name), TypeName(type) {}
   };
 
  private:
-  std::string Name;
   std::vector<Argument> Args;
-  DataType ReturnType;
-  std::unique_ptr<Expr> Body;
+  std::unique_ptr<Block> Body;
 
  public:
-  FnDecl(const std::string &name, std::vector<Argument> args, DataType returnType,
-         std::unique_ptr<Expr> &body)
-      : Name(name), Args(std::move(args)), ReturnType(returnType), Body(std::move(body)) {
-  }
+  FnDecl(const std::string &name, const std::string &returnType,
+         std::vector<Argument> args, std::unique_ptr<Block> &body)
+      : Decl(name, returnType), Args(std::move(args)), Body(std::move(body)) {}
 };
 } // namespace AST
 } // namespace Language

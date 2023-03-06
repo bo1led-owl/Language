@@ -3,31 +3,31 @@
 
 #include <memory>
 
+#include "AST/DeclBase.hh"
 #include "Types.hh"
 
 namespace Language {
 namespace AST {
-class Decl;
-
 /// Base AST statement class
 class Stmt {
+  std::string Type;
+
  public:
+  Stmt() : Type("void") {}
+  Stmt(const std::string &type) : Type(type) {}
   virtual ~Stmt() = default;
+
+  inline const std::string &GetType() const { return Type; }
 };
 
-/// Integer literal statement class
-class IntStmt : public Stmt {
-  i32 Value;
-
- public:
-  IntStmt(const i32 value) : Value(value) {}
-};
-
+/// Declaration statement (e.g. variable declaration in function body)
 class DeclStmt : public Stmt {
-  std::unique_ptr<Decl> Value;
+  std::shared_ptr<Decl> Value;
 
  public:
-  DeclStmt(std::unique_ptr<Decl> decl) : Value(std::move(decl)) {}
+  DeclStmt(std::shared_ptr<Decl> decl) : Value(decl) {}
+
+  inline std::shared_ptr<Decl> GetValue() const { return Value; }
 };
 } // namespace AST
 } // namespace Language

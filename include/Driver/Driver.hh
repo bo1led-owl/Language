@@ -12,7 +12,7 @@ class Driver {
   Parse::Parser Parser;
 
  public:
-  Driver(const std::string &filepath) : Lexer(Lex::Lexer{filepath}), Parser(Lexer) {}
+  Driver(std::string filepath) : Lexer(Lex::Lexer{filepath}), Parser(Lexer) {}
   Driver(Lex::Lexer lexer, Parse::Parser parser)
       : Lexer(std::move(lexer)), Parser(std::move(parser)) {}
 

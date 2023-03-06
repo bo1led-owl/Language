@@ -6,7 +6,7 @@
 namespace Language {
 namespace Lex {
 /// Enum of kinds of tokens
-enum TokenKind : u8 {
+enum class TokenKind : i8 {
   EndOfInput,
   Unknown,
   Newline,
@@ -14,6 +14,7 @@ enum TokenKind : u8 {
   // keywords
   Fn,
   Let,
+  Mut,
 
   Identifier,
 
@@ -21,15 +22,15 @@ enum TokenKind : u8 {
   Number,
 
   // characters
-  Comma,       // ,
-  Fullstop,    // .
-  Colon,       // :
   LParen,      // (
   RParen,      // )
   LCurBracket, // {
   RCurBracket, // }
   LSqBracket,  // [
   RSqBracket,  // ]
+  Comma,       // ,
+  Fullstop,    // .
+  Colon,       // :
   Plus,        // +
   Minus,       // -
   Asterisk,    // *
