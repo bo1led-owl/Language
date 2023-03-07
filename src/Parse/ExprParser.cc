@@ -10,9 +10,7 @@ namespace Language {
 namespace Parse {
 std::unique_ptr<AST::Expr> Parser::ParseExpr() {
   std::unique_ptr<AST::Expr> LHS{ParsePrimaryExpr()};
-  if (!LHS) {
-    return nullptr;
-  }
+
   return ParseBinaryExpr(0, std::move(LHS));
 }
 
@@ -33,7 +31,7 @@ std::unique_ptr<AST::Expr> Parser::ParsePrimaryExpr() {
   case Lex::TokenKind::Number:
     return ParseNumberExpr();
   default:
-    return nullptr;
+    throw ParseException{"Unknown expression"};
   }
 }
 
@@ -92,13 +90,12 @@ std::unique_ptr<AST::Expr> Parser::ParseBinaryExpr(const i32 opPrec,
     Advance();
 
     auto RHS = ParsePrimaryExpr();
-    if (!RHS)
-      return nullptr;
-    int NextPrec = GetCurTokenPrecedence();
+    if (RHS == nullptr) {
+      throw ParseException{"Syntax error: expected binary operator second argument"};
+    }
+    i32 NextPrec = GetCurTokenPrecedence();
     if (CurPrec < NextPrec) {
       RHS = ParseBinaryExpr(CurPrec + 1, std::move(RHS));
-      if (!RHS)
-        return nullptr;
     }
 
     LHS = std::make_unique<AST::BinaryExpr>(BinOp, std::move(LHS), std::move(RHS));
