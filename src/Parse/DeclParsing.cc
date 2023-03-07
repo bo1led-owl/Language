@@ -1,3 +1,4 @@
+#include "Lex/Token.hh"
 #include "Parse/Exception.hh"
 #include "Parse/Parser.hh"
 
@@ -38,8 +39,9 @@ std::unique_ptr<AST::VarDecl> Parser::ParseVarDecl() {
   }
 
   if (CurToken->IsNot(Lex::TokenKind::Newline) &&
-      CurToken->IsNot(Lex::TokenKind::EndOfInput)) {
-    throw ParseException{"Syntax error: statements must be separated with a newline"};
+      CurToken->IsNot(Lex::TokenKind::EndOfInput) &&
+      CurToken->IsNot(Lex::TokenKind::RCurBracket)) {
+    throw ParseException{"Syntax error: unexpected token at the end of statement"};
   }
 
   // eat newline and NOT eat end of input
