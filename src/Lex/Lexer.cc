@@ -36,6 +36,7 @@ std::unique_ptr<Token> Lexer::LexToken() {
   // lexing arrows (-> and <-) separately, because they are complex symbols
   if (CurChar == '-') {
     if (Advance() == '>') {
+      Advance();
       return std::make_unique<Token>(Lex::TokenKind::RightArrow);
     }
     return std::make_unique<Token>(Lex::TokenKind::Minus);
@@ -43,6 +44,7 @@ std::unique_ptr<Token> Lexer::LexToken() {
 
   if (CurChar == '<') {
     if (Advance() == '-') {
+      Advance();
       return std::make_unique<Token>(Lex::TokenKind::LeftArrow);
     }
     return std::make_unique<Token>(Lex::TokenKind::LessThan);

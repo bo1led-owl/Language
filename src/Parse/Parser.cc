@@ -39,7 +39,7 @@ std::vector<std::shared_ptr<AST::Decl>> Parser::Parse() {
 
     case Lex::TokenKind::Fn: {
       std::shared_ptr<AST::FnDecl> decl{ParseFnDecl()};
-      AST.emplace_back(decl);
+      AST.push_back(decl);
       Functions[decl->GetName()] = decl;
     } break;
 

@@ -3,6 +3,7 @@
 
 #include <memory>
 #include <string>
+#include <unordered_map>
 #include <unordered_set>
 #include <vector>
 
@@ -57,30 +58,24 @@ class Parser {
   /// Move to the next token
   void Advance() { CurToken = Lexer.LexToken(); }
 
-  const inline std::string &GetFunctionType(const std::string &name) {
+  std::string GetFunctionType(const std::string &name) {
+    if (!Functions.contains(name)) {
+      throw ParseException{"Error: cannot find function with name " + name};
+    }
+    return Functions[name]->GetType();
+  }
+
+  std::string GetVariableType(const std::string &name) {
     std::shared_ptr<AST::VarDecl> var{CurBlock->SearchForVariable(name)};
 
     if (var == nullptr) {
-      if (!Variables.contains(name)) {
-        throw ParseException{"Error: cannot find variable with name" + name};
-      } else {
-        return Variables[name]->GetType();
-      }
-    }
-    return var->GetType();
-  }
-
-  const inline std::string &GetVariableType(const std::string &name) {
-    std::shared_ptr<AST::VarDecl> fn{CurBlock->SearchForVariable(name)};
-
-    if (fn == nullptr) {
       if (!Functions.contains(name)) {
-        throw ParseException{"Error: cannot find variable with name" + name};
+        throw ParseException{"Error: cannot find variable with name " + name};
       } else {
         return Functions[name]->GetType();
       }
     }
-    return fn->GetType();
+    return var->GetType();
   }
 
   std::unique_ptr<AST::VarDecl> ParseVarDecl();

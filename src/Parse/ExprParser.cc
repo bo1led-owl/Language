@@ -25,8 +25,11 @@ std::unique_ptr<AST::Expr> Parser::ParsePrimaryExpr() {
     Advance();
     return result;
   } // case LParen
+
   case Lex::TokenKind::Identifier:
-    ParseRefExpr();
+    return ParseRefExpr();
+    break;
+
   // integer or floating point number (1, 1.1, 1. are valid)
   case Lex::TokenKind::Number:
     return ParseNumberExpr();
@@ -40,6 +43,8 @@ std::unique_ptr<AST::Expr> Parser::ParseRefExpr() {
   // eat identifier
   Advance();
   if (CurToken->Is(Lex::TokenKind::LParen)) {
+    // eat "("
+    Advance();
     std::vector<std::unique_ptr<AST::Expr>> args;
     while (CurToken->IsNot(Lex::TokenKind::RParen)) {
       args.push_back(ParseExpr());
@@ -50,6 +55,8 @@ std::unique_ptr<AST::Expr> Parser::ParseRefExpr() {
         throw ParseException{"Syntax error: expected \",\" or \")\" in arguments list"};
       }
     }
+    // eat ")"
+    Advance();
 
     return std::make_unique<AST::CallExpr>(name, GetFunctionType(name), std::move(args));
   }
