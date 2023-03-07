@@ -35,7 +35,6 @@ namespace Language {
 namespace Parse {
 /// Class for parsing lexed tokens
 class Parser {
-
   Lex::Lexer &Lexer;
   std::unique_ptr<Lex::Token> CurToken;
   std::shared_ptr<AST::Block> CurBlock{nullptr};
@@ -43,12 +42,21 @@ class Parser {
   std::unordered_map<std::string, std::shared_ptr<AST::FnDecl>> Functions;
   std::unordered_map<std::string, std::shared_ptr<AST::VarDecl>> Variables;
 
-  std::unordered_set<std::string> Types{"bool", "i8",  "i16", "i32", "i64", "u8",
-                                        "u16",  "u32", "u64", "f32", "f64"};
+  const std::unordered_set<std::string> Types{"bool", "i8",  "i16", "i32", "i64", "u8",
+                                              "u16",  "u32", "u64", "f32", "f64"};
+
+  static std::unordered_map<Lex::TokenKind, i32> BinopPrecedence;
+
+  i32 GetCurTokenPrecedence() {
+    int TokPrec = BinopPrecedence[CurToken->GetKind()];
+    if (TokPrec <= 0)
+      return -1;
+    return TokPrec;
+  }
 
   /// Move to the next token
   void Advance() { CurToken = Lexer.LexToken(); }
-  
+
   const inline std::string &GetFunctionType(const std::string &name) {
     std::shared_ptr<AST::VarDecl> var{CurBlock->SearchForVariable(name)};
 
@@ -81,13 +89,16 @@ class Parser {
   std::unique_ptr<AST::Stmt> ParseStmt();
   std::unique_ptr<AST::Block> ParseBlock();
 
-  std::unique_ptr<AST::Expr> ParseExpr();
+  /// Parse any expression but binary
+  std::unique_ptr<AST::Expr> ParsePrimaryExpr();
   std::unique_ptr<AST::Expr> ParseRefExpr();
   std::unique_ptr<AST::Expr> ParseNumberExpr();
-  std::unique_ptr<AST::BinaryExpr> ParseBinaryExpr();
+  std::unique_ptr<AST::Expr> ParseBinaryExpr(i32 opPrec, std::unique_ptr<AST::Expr> LHS);
 
  public:
   Parser(Lex::Lexer &lexer) : Lexer(lexer), CurToken(Lexer.LexToken()) {}
+
+  std::unique_ptr<AST::Expr> ParseExpr();
 
   std::vector<std::shared_ptr<AST::Decl>> Parse();
 };

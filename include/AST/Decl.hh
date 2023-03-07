@@ -32,10 +32,10 @@ class FnDecl : public Decl {
  public:
   struct Argument {
     std::string Name;
-    const std::string &TypeName;
+    std::string Type;
 
     Argument(const std::string &name, const std::string &type)
-        : Name(name), TypeName(type) {}
+        : Name(name), Type(type) {}
   };
 
  private:

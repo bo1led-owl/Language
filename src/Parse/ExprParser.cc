@@ -1,6 +1,7 @@
 #include <memory>
 
 #include "AST/Decl.hh"
+#include "AST/Expr.hh"
 #include "Lex/TokenKind.hh"
 #include "Parse/Exception.hh"
 #include "Parse/Parser.hh"
@@ -8,28 +9,32 @@
 namespace Language {
 namespace Parse {
 std::unique_ptr<AST::Expr> Parser::ParseExpr() {
+  std::unique_ptr<AST::Expr> LHS{ParsePrimaryExpr()};
+  if (!LHS) {
+    return nullptr;
+  }
+  return ParseBinaryExpr(0, std::move(LHS));
+}
+
+std::unique_ptr<AST::Expr> Parser::ParsePrimaryExpr() {
   switch (CurToken->GetKind()) {
   // expression in parentheses
   case Lex::TokenKind::LParen: {
     // eat "("
     Advance();
-    std::unique_ptr<AST::Expr> result{ParseExpr()};
+    auto result{ParseExpr()};
     // eat ")"
     Advance();
     return result;
-  }
-
+  } // case LParen
   case Lex::TokenKind::Identifier:
     ParseRefExpr();
-
   // integer or floating point number (1, 1.1, 1. are valid)
   case Lex::TokenKind::Number:
     return ParseNumberExpr();
-
   default:
-    break;
+    return nullptr;
   }
-  return std::make_unique<AST::Expr>("void");
 }
 
 std::unique_ptr<AST::Expr> Parser::ParseRefExpr() {
@@ -40,6 +45,12 @@ std::unique_ptr<AST::Expr> Parser::ParseRefExpr() {
     std::vector<std::unique_ptr<AST::Expr>> args;
     while (CurToken->IsNot(Lex::TokenKind::RParen)) {
       args.push_back(ParseExpr());
+      // eat ","
+      if (CurToken->Is(Lex::TokenKind::Comma)) {
+        Advance();
+      } else {
+        throw ParseException{"Syntax error: expected \",\" or \")\" in arguments list"};
+      }
     }
 
     return std::make_unique<AST::CallExpr>(name, GetFunctionType(name), std::move(args));
@@ -70,8 +81,28 @@ std::unique_ptr<AST::Expr> Parser::ParseNumberExpr() {
   return std::make_unique<AST::LiteralExpr<i32>>("i32", value);
 }
 
-std::unique_ptr<AST::BinaryExpr> ParseBinaryExpr() {
-  // TODO
+std::unique_ptr<AST::Expr> Parser::ParseBinaryExpr(const i32 opPrec,
+                                                   std::unique_ptr<AST::Expr> LHS) {
+  while (true) {
+    i32 CurPrec = GetCurTokenPrecedence();
+    if (CurPrec < opPrec)
+      return LHS;
+    Lex::TokenKind BinOp = CurToken->GetKind();
+    // eat operator
+    Advance();
+
+    auto RHS = ParsePrimaryExpr();
+    if (!RHS)
+      return nullptr;
+    int NextPrec = GetCurTokenPrecedence();
+    if (CurPrec < NextPrec) {
+      RHS = ParseBinaryExpr(CurPrec + 1, std::move(RHS));
+      if (!RHS)
+        return nullptr;
+    }
+
+    LHS = std::make_unique<AST::BinaryExpr>(BinOp, std::move(LHS), std::move(RHS));
+  }
 }
 } // namespace Parse
 } // namespace Language

@@ -102,7 +102,7 @@ std::unique_ptr<AST::FnDecl> Parser::ParseFnDecl() {
     Advance();
   }
 
-  std::unique_ptr<AST::Block> fnBody = ParseBlock();
+  auto fnBody = ParseBlock();
   return std::make_unique<AST::FnDecl>(fnName, fnReturnType, fnArgs, fnBody);
 }
 } // namespace Parse

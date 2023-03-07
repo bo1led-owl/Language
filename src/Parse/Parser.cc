@@ -1,5 +1,6 @@
 #include <memory>
 #include <string>
+#include <unordered_map>
 #include <unordered_set>
 #include <vector>
 
@@ -17,6 +18,16 @@
 
 namespace Language {
 namespace Parse {
+std::unordered_map<Lex::TokenKind, i32> Parser::BinopPrecedence{
+    {Lex::TokenKind::Equals, 10},      // <
+    {Lex::TokenKind::LessThan, 20},    // <
+    {Lex::TokenKind::GreaterThan, 20}, // >
+    {Lex::TokenKind::Plus, 30},        // +
+    {Lex::TokenKind::Minus, 30},       // -
+    {Lex::TokenKind::Asterisk, 40},    // -
+    {Lex::TokenKind::Slash, 40},       // -
+};
+
 std::vector<std::shared_ptr<AST::Decl>> Parser::Parse() {
   std::vector<std::shared_ptr<AST::Decl>> AST;
 

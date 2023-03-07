@@ -6,6 +6,7 @@
 #include <vector>
 
 #include "AST/Stmt.hh"
+#include "Lex/TokenKind.hh"
 #include "Types.hh"
 
 namespace Language {
@@ -18,22 +19,15 @@ class Expr : public Stmt {
 
 /// Binary operation expression class
 class BinaryExpr : public Expr {
- public:
-  enum class Operator : i8 {
-    Plus,
-    Minus,
-    Multiply,
-    Divide,
-  };
-
- private:
-  Operator Op;
+  Lex::TokenKind Op;
   std::unique_ptr<Expr> LHS, RHS;
 
-  BinaryExpr(const Operator op, std::unique_ptr<Expr> lhs, std::unique_ptr<Expr> rhs)
+ public:
+  BinaryExpr(const Lex::TokenKind op, std::unique_ptr<Expr> lhs,
+             std::unique_ptr<Expr> rhs)
       : Expr(lhs->GetType()), Op(op), LHS(std::move(lhs)), RHS(std::move(rhs)) {}
 
-  inline Operator GetOperator() const { return Op; }
+  inline Lex::TokenKind GetOperator() const { return Op; }
 };
 
 /// Variable reference expression class
@@ -48,15 +42,15 @@ class VarRefExpr : public Expr {
 
 /// Function call expression class
 class CallExpr : public Expr {
-  std::string CalleeName;
+  std::string Callee;
   std::vector<std::unique_ptr<Expr>> Args;
 
  public:
   CallExpr(const std::string &callee, const std::string &type,
            std::vector<std::unique_ptr<Expr>> args)
-      : Expr(type), CalleeName(callee), Args(std::move(args)) {}
+      : Expr(type), Callee(callee), Args(std::move(args)) {}
 
-  inline const std::string &GetCalleeName() { return CalleeName; }
+  inline const std::string &GetCalleeName() { return Callee; }
   inline const std::vector<std::unique_ptr<Expr>> &GetArgs() { return Args; }
 };
 } // namespace AST

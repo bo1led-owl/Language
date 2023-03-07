@@ -13,7 +13,7 @@ std::unique_ptr<AST::Block> Parser::ParseBlock() {
   Advance();
   EAT_IF_TOKEN_IS(Lex::TokenKind::Newline)
 
-  std::unique_ptr<AST::Block> result = std::make_unique<AST::Block>(CurBlock);
+  auto result{std::make_unique<AST::Block>(CurBlock)};
 
   while (CurToken->IsNot(Lex::TokenKind::RCurBracket)) {
     THROW_IF_TOKEN_IS(Lex::TokenKind::EndOfInput,
