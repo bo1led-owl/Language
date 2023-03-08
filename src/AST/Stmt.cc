@@ -5,6 +5,15 @@
 
 namespace Language {
 namespace AST {
+void ReturnStmt::Print(const i32 offset) {
+  Print::MakeOffset(offset);
+
+  std::cout << "ReturnStmt\n";
+  if (Value != nullptr) {
+    Value->Print(offset + 1);
+  }
+}
+
 void DeclStmt::Print(const i32 offset) {
   Print::MakeOffset(offset);
 

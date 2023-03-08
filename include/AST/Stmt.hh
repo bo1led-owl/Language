@@ -10,6 +10,16 @@
 
 namespace Language {
 namespace AST {
+class ReturnStmt : public Stmt {
+  std::unique_ptr<Expr> Value;
+
+ public:
+  ReturnStmt(std::unique_ptr<Expr> expr) : Value(std::move(expr)) {}
+
+  void Print(const i32 offset = 0) override;
+  std::unique_ptr<Expr> GetValue() { return std::move(Value); }
+};
+
 /// Declaration statement (e.g. variable declaration in function body)
 class DeclStmt : public Stmt {
   std::shared_ptr<Decl> Value;

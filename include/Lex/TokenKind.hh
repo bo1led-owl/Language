@@ -15,6 +15,7 @@ enum class TokenKind : i8 {
   Fn,
   Let,
   Mut,
+  Return,
 
   Identifier,
 

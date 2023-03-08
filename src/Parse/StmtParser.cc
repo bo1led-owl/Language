@@ -59,6 +59,14 @@ std::unique_ptr<AST::Stmt> Parser::ParseStmt() {
   case Lex::TokenKind::LCurBracket:
     return std::make_unique<AST::BlockStmt>(ParseBlock());
 
+  case Lex::TokenKind::Return:
+    // eat "return"
+    Advance();
+    if (CurToken->Is(Lex::TokenKind::Newline)) {
+      return std::make_unique<AST::ReturnStmt>(nullptr);
+    }
+    return std::make_unique<AST::ReturnStmt>(ParseExpr());
+
   default:
     return ParseExpr();
   }

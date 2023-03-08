@@ -76,6 +76,7 @@ std::unique_ptr<Token> Lexer::LexToken() {
     REGISTER_STRING("fn", TokenKind::Fn)
     REGISTER_STRING("let", TokenKind::Let)
     REGISTER_STRING("mut", TokenKind::Mut)
+    REGISTER_STRING("return", TokenKind::Return)
 
     return std::make_unique<IdentifierToken>(identifierString);
   }
