@@ -16,7 +16,7 @@ const std::shared_ptr<VarDecl> Block::SearchForVariable(const std::string &name)
 }
 
 void Block::Print(i32 offset) {
-  Print::MakeOffset(offset);
+  // Print::MakeOffset(offset);
 
   std::cout << "{";
   if (Body.size() != 0) {
@@ -25,6 +25,7 @@ void Block::Print(i32 offset) {
   for (const std::unique_ptr<Stmt> &stmt : Body) {
     stmt->Print(offset + 1);
   }
+  Print::MakeOffset(offset);
   std::cout << "}\n";
 }
 } // namespace AST

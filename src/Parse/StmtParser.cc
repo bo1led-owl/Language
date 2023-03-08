@@ -1,31 +1,37 @@
 #include "AST/Decl.hh"
 #include "AST/Stmt.hh"
+#include "Lex/TokenKind.hh"
 #include "Parse/Exception.hh"
 #include "Parse/Parser.hh"
 #include <memory>
 
 namespace Language {
 namespace Parse {
-std::unique_ptr<AST::Block> Parser::ParseBlock() {
+std::shared_ptr<AST::Block> Parser::ParseBlock() {
   THROW_IF_TOKEN_IS_NOT(Lex::TokenKind::LCurBracket,
                         "Syntax error: missing block opening curly bracket")
   // eat "{"
   Advance();
   EAT_IF_TOKEN_IS(Lex::TokenKind::Newline)
 
-  auto result{std::make_unique<AST::Block>(CurBlock)};
+  CurBlock = std::make_unique<AST::Block>(CurBlock);
 
   while (CurToken->IsNot(Lex::TokenKind::RCurBracket)) {
     THROW_IF_TOKEN_IS(Lex::TokenKind::EndOfInput,
                       "Syntax error: expected closed statement block")
     EAT_IF_TOKEN_IS(Lex::TokenKind::Newline)
 
-    if (CurToken->Is(Lex::TokenKind::Let)) {
+    switch (CurToken->GetKind()) {
+    case Lex::TokenKind::RCurBracket:
+      break;
+    case Lex::TokenKind::Let: {
       std::shared_ptr<AST::VarDecl> decl = ParseVarDecl();
-      result->AddVariable(decl->GetName(), decl);
-      result->AddToBody(std::make_unique<AST::DeclStmt>(std::move(decl)));
-    } else {
-      result->AddToBody(ParseStmt());
+      CurBlock->AddVariable(decl->GetName(), decl);
+      CurBlock->AddToBody(std::make_unique<AST::DeclStmt>(std::move(decl)));
+      break;
+    } // case Lex::TokenKind::Lex
+    default:
+      CurBlock->AddToBody(ParseStmt());
     }
   }
 
@@ -33,14 +39,25 @@ std::unique_ptr<AST::Block> Parser::ParseBlock() {
   // eat "}"
   Advance();
 
+  auto result{std::move(CurBlock)};
   CurBlock = result->GetParent();
   return result;
 }
 
 std::unique_ptr<AST::Stmt> Parser::ParseStmt() {
+  while (CurToken->Is(Lex::TokenKind::Newline)) {
+    Advance();
+  }
+
+  THROW_IF_TOKEN_IS(Lex::TokenKind::EndOfInput,
+                    "Syntax error: expected statement, found end of input")
+
   switch (CurToken->GetKind()) {
   case Lex::TokenKind::Let:
     return std::make_unique<AST::DeclStmt>(ParseVarDecl());
+
+  case Lex::TokenKind::LCurBracket:
+    return std::make_unique<AST::BlockStmt>(ParseBlock());
 
   default:
     return ParseExpr();

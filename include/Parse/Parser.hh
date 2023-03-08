@@ -82,7 +82,7 @@ class Parser {
   std::unique_ptr<AST::FnDecl> ParseFnDecl();
 
   std::unique_ptr<AST::Stmt> ParseStmt();
-  std::unique_ptr<AST::Block> ParseBlock();
+  std::shared_ptr<AST::Block> ParseBlock();
 
   /// Parse any expression but binary
   std::unique_ptr<AST::Expr> ParsePrimaryExpr();

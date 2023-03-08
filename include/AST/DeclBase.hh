@@ -1,5 +1,5 @@
-#ifndef DECL_BASE_HH
-#define DECL_BASE_HH
+#ifndef DECLBASE_HH
+#define DECLBASE_HH
 
 #include <string>
 

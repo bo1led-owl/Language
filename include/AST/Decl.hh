@@ -6,7 +6,7 @@
 #include <vector>
 
 #include "AST/DeclBase.hh"
-#include "AST/Expr.hh"
+#include "AST/ExprBase.hh"
 
 namespace Language {
 namespace AST {
@@ -40,11 +40,11 @@ class FnDecl : public Decl {
 
  private:
   std::vector<Argument> Args;
-  std::unique_ptr<Block> Body;
+  std::shared_ptr<Block> Body;
 
  public:
   FnDecl(const std::string &name, const std::string &returnType,
-         std::vector<Argument> args, std::unique_ptr<Block> &body)
+         std::vector<Argument> args, std::shared_ptr<Block> &body)
       : Decl(name, returnType), Args(std::move(args)), Body(std::move(body)) {}
 
   void Print(i32 offset = 0) override;

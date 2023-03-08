@@ -36,7 +36,6 @@ std::vector<std::shared_ptr<AST::Decl>> Parser::Parse() {
     case Lex::TokenKind::Newline:
       Advance();
       break;
-
     case Lex::TokenKind::Fn: {
       std::shared_ptr<AST::FnDecl> decl{ParseFnDecl()};
       AST.push_back(decl);

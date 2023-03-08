@@ -10,12 +10,14 @@ namespace Language {
 namespace Parse {
 std::unique_ptr<AST::Expr> Parser::ParseExpr() {
   std::unique_ptr<AST::Expr> LHS{ParsePrimaryExpr()};
-
   return ParseBinaryExpr(0, std::move(LHS));
 }
 
 std::unique_ptr<AST::Expr> Parser::ParsePrimaryExpr() {
+  THROW_IF_TOKEN_IS(Lex::TokenKind::EndOfInput,
+                    "Syntax error: expected expression, found end of input")
   switch (CurToken->GetKind()) {
+
   // expression in parentheses
   case Lex::TokenKind::LParen: {
     // eat "("

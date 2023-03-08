@@ -7,7 +7,7 @@
 #include <vector>
 
 #include "AST/Decl.hh"
-#include "AST/Stmt.hh"
+#include "AST/StmtBase.hh"
 
 namespace Language {
 namespace AST {

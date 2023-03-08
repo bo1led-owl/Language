@@ -5,18 +5,13 @@
 #include <string>
 #include <vector>
 
+#include "AST/ExprBase.hh"
 #include "AST/Stmt.hh"
 #include "Lex/TokenKind.hh"
 #include "Types.hh"
 
 namespace Language {
 namespace AST {
-/// Base AST expression class
-class Expr : public Stmt {
- public:
-  Expr(const std::string &type) : Stmt(type) {}
-};
-
 /// Binary operation expression class
 class BinaryExpr : public Expr {
   Lex::TokenKind Operator;

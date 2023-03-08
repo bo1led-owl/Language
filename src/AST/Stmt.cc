@@ -14,5 +14,12 @@ void DeclStmt::Print(i32 offset) {
   Print::MakeOffset(offset);
   std::cout << "}\n";
 }
+
+void BlockStmt::Print(i32 offset) {
+  Print::MakeOffset(offset);
+
+  std::cout << "BlockStmt ";
+  Value->Print(offset);
+}
 } // namespace AST
 } // namespace Language

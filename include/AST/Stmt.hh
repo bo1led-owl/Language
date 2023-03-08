@@ -3,27 +3,13 @@
 
 #include <memory>
 
+#include "AST/Block.hh"
 #include "AST/DeclBase.hh"
 #include "Print/Print.hh"
 #include "Types.hh"
 
 namespace Language {
 namespace AST {
-/// Base AST statement class
-class Stmt {
- protected:
-  std::string Type;
-
- public:
-  Stmt() : Type("void") {}
-  Stmt(const std::string &type) : Type(type) {}
-  virtual ~Stmt() = default;
-
-  virtual void Print(i32 offset = 0) { Print::MakeOffset(offset); };
-
-  inline const std::string &GetType() const { return Type; }
-};
-
 /// Declaration statement (e.g. variable declaration in function body)
 class DeclStmt : public Stmt {
   std::shared_ptr<Decl> Value;
@@ -33,6 +19,16 @@ class DeclStmt : public Stmt {
 
   void Print(i32 offset = 0) override;
   inline std::shared_ptr<Decl> GetValue() const { return Value; }
+};
+
+class BlockStmt : public Stmt {
+  std::shared_ptr<Block> Value;
+
+ public:
+  BlockStmt(std::shared_ptr<Block> block) : Value(block) {}
+
+  void Print(i32 offset = 0) override;
+  std::shared_ptr<Block> GetValue() { return Value; }
 };
 } // namespace AST
 } // namespace Language

@@ -1,15 +1,15 @@
 #include "Lex/Token.hh"
 #include "Parse/Exception.hh"
 #include "Parse/Parser.hh"
+#include <iostream>
 
 namespace Language {
 namespace Parse {
 std::unique_ptr<AST::VarDecl> Parser::ParseVarDecl() {
   // eat "let"
   Advance();
-  THROW_IF_TOKEN_IS_NOT(Lex::TokenKind::Identifier, "Syntax error: missing variable name")
-  bool mut{CurToken->Is(Lex::TokenKind::Mut)};
 
+  bool mut{CurToken->Is(Lex::TokenKind::Mut)};
   EAT_IF_TOKEN_IS(Lex::TokenKind::Mut)
 
   THROW_IF_TOKEN_IS_NOT(Lex::TokenKind::Identifier, "Syntax error: missing variable name")
@@ -40,6 +40,7 @@ std::unique_ptr<AST::VarDecl> Parser::ParseVarDecl() {
 
   if (CurToken->IsNot(Lex::TokenKind::Newline) &&
       CurToken->IsNot(Lex::TokenKind::EndOfInput) &&
+      CurToken->IsNot(Lex::TokenKind::LCurBracket) &&
       CurToken->IsNot(Lex::TokenKind::RCurBracket)) {
     throw ParseException{"Syntax error: unexpected token at the end of statement"};
   }
