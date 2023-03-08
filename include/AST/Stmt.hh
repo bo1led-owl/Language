@@ -4,18 +4,22 @@
 #include <memory>
 
 #include "AST/DeclBase.hh"
+#include "Print/Print.hh"
 #include "Types.hh"
 
 namespace Language {
 namespace AST {
 /// Base AST statement class
 class Stmt {
+ protected:
   std::string Type;
 
  public:
   Stmt() : Type("void") {}
   Stmt(const std::string &type) : Type(type) {}
   virtual ~Stmt() = default;
+
+  virtual void Print(i32 offset = 0) { Print::MakeOffset(offset); };
 
   inline const std::string &GetType() const { return Type; }
 };
@@ -27,6 +31,7 @@ class DeclStmt : public Stmt {
  public:
   DeclStmt(std::shared_ptr<Decl> decl) : Value(decl) {}
 
+  void Print(i32 offset = 0) override;
   inline std::shared_ptr<Decl> GetValue() const { return Value; }
 };
 } // namespace AST

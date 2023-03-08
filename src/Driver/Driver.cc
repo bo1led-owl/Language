@@ -22,7 +22,8 @@ void Driver::PrintAST() {
     const auto AST = Parser.Parse();
 
     for (const auto &decl : AST) {
-      std::cout << typeid(*decl).name() << '\n';
+      // std::cout << typeid(*decl).name() << '\n';
+      decl->Print();
     }
   } catch (Parse::ParseException e) {
     std::cout << e.what() << '\n';

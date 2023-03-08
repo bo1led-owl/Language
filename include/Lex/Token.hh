@@ -22,7 +22,7 @@ class Token {
 
   inline virtual std::string GetNumberData() const {
     assert(Kind == TokenKind::Number && "The token is not a NumberToken");
-    return 0;
+    return "";
   }
 
   inline virtual std::string GetIdentifierData() const {

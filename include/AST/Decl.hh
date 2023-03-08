@@ -20,9 +20,10 @@ class VarDecl : public Decl {
 
  public:
   VarDecl(const std::string &name, const std::string &type, const bool mut,
-          std::unique_ptr<Expr> &value)
+          std::unique_ptr<Expr>& value)
       : Decl(name, type), Mutable(mut), Value(std::move(value)) {}
 
+  void Print(i32 offset = 0) override;
   inline bool IsMutable() const { return Mutable; }
   inline std::unique_ptr<Expr> &GetValue() { return Value; }
 };
@@ -34,8 +35,7 @@ class FnDecl : public Decl {
     std::string Name;
     std::string Type;
 
-    Argument(const std::string &name, const std::string &type)
-        : Name(name), Type(type) {}
+    Argument(const std::string &name, const std::string &type) : Name(name), Type(type) {}
   };
 
  private:
@@ -46,6 +46,8 @@ class FnDecl : public Decl {
   FnDecl(const std::string &name, const std::string &returnType,
          std::vector<Argument> args, std::unique_ptr<Block> &body)
       : Decl(name, returnType), Args(std::move(args)), Body(std::move(body)) {}
+
+  void Print(i32 offset = 0) override;
 };
 } // namespace AST
 } // namespace Language

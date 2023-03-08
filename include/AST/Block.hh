@@ -23,13 +23,14 @@ class Block {
   Block(std::shared_ptr<Block> parent) : ParentBlock(std::move(parent)) {}
   virtual ~Block() = default;
 
+  void Print(i32 offset = 0);
   void AddVariable(const std::string &name, std::shared_ptr<VarDecl> decl) {
     Variables[name] = decl;
   }
   void AddToBody(std::unique_ptr<Stmt> stmt) { Body.emplace_back(std::move(stmt)); }
 
   const std::shared_ptr<VarDecl> SearchForVariable(const std::string &name);
-  inline std::shared_ptr<Block> GetParent() { return std::move(ParentBlock); }
+  inline std::shared_ptr<Block> GetParent() { return ParentBlock; }
 };
 } // namespace AST
 } // namespace Language

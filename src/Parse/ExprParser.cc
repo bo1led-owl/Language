@@ -75,6 +75,8 @@ std::unique_ptr<AST::Expr> Parser::ParseNumberExpr() {
     number += '.';
     if (CurToken->Is(Lex::TokenKind::Number)) {
       number += CurToken->GetNumberData();
+      // eat fractional part of a number
+      Advance();
     }
     return std::make_unique<AST::LiteralExpr<f64>>("f64", std::stod(number));
   }
