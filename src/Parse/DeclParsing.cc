@@ -87,7 +87,7 @@ std::unique_ptr<AST::FnDecl> Parser::ParseFnDecl() {
     THROW_IF_TOKEN_IS_NOT(Lex::TokenKind::Identifier,
                           "Syntax error: missing function parameter type declaration")
     if (!Types.contains(CurToken->GetIdentifierData())) {
-      throw ParseException{"Syntax error: unknown parameter type"};
+      throw ParseException{"Unknown parameter type"};
     }
     std::string argType{CurToken->GetIdentifierData()};
     // eat argument type
@@ -107,7 +107,7 @@ std::unique_ptr<AST::FnDecl> Parser::ParseFnDecl() {
                           "Syntax error: missing function return type")
     fnReturnType = CurToken->GetIdentifierData();
     if (!Types.contains(fnReturnType)) {
-      throw ParseException{"Syntax error: unknown function return type"};
+      throw ParseException{"Unknown function return type"};
     }
     // eat return type
     Advance();
@@ -116,6 +116,9 @@ std::unique_ptr<AST::FnDecl> Parser::ParseFnDecl() {
   CurFn = std::make_unique<AST::FnDecl>(fnName, fnReturnType, fnArgs);
 
   CurFn->SetBody(ParseBlock());
+  if (CurFn->GetType() != "" && !CurFn->HasReturnStmt()) {
+    throw ParseException{"Function do not return a value"};
+  }
   auto result = std::move(CurFn);
   CurFn = nullptr;
   return result;

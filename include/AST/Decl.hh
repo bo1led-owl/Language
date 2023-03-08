@@ -42,6 +42,8 @@ class FnDecl : public Decl {
   std::vector<Argument> Args;
   std::shared_ptr<Block> Body;
 
+  bool HasReturn{false};
+
  public:
   FnDecl(const std::string &name, const std::string &returnType,
          std::vector<Argument> args)
@@ -51,7 +53,9 @@ class FnDecl : public Decl {
          std::vector<Argument> args, std::shared_ptr<Block> &body)
       : Decl(name, returnType), Args(std::move(args)), Body(std::move(body)) {}
 
-  void SetBody(std::shared_ptr<Block> body) { Body = body; }
+  inline void SetBody(std::shared_ptr<Block> body) { Body = body; }
+  inline void AddReturnStmt() { HasReturn = true; }
+  inline bool HasReturnStmt() { return HasReturn; }
   void Print(const i32 offset = 0) override;
 };
 } // namespace AST

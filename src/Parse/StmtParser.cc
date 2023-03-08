@@ -62,6 +62,7 @@ std::unique_ptr<AST::Stmt> Parser::ParseStmt() {
   case Lex::TokenKind::Return: {
     // eat "return"
     Advance();
+    CurFn->AddReturnStmt();
     if (CurToken->Is(Lex::TokenKind::Newline) ||
         CurToken->Is(Lex::TokenKind::RCurBracket)) {
       if (CurFn->GetType() == "") {
