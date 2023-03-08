@@ -39,6 +39,7 @@ class Parser {
   Lex::Lexer &Lexer;
   std::unique_ptr<Lex::Token> CurToken;
   std::shared_ptr<AST::Block> CurBlock{nullptr};
+  std::unique_ptr<AST::FnDecl> CurFn{nullptr};
 
   std::unordered_map<std::string, std::shared_ptr<AST::FnDecl>> Functions;
   std::unordered_map<std::string, std::shared_ptr<AST::VarDecl>> Variables;

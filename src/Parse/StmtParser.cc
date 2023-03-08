@@ -59,13 +59,26 @@ std::unique_ptr<AST::Stmt> Parser::ParseStmt() {
   case Lex::TokenKind::LCurBracket:
     return std::make_unique<AST::BlockStmt>(ParseBlock());
 
-  case Lex::TokenKind::Return:
+  case Lex::TokenKind::Return: {
     // eat "return"
     Advance();
-    if (CurToken->Is(Lex::TokenKind::Newline)) {
-      return std::make_unique<AST::ReturnStmt>(nullptr);
+    if (CurToken->Is(Lex::TokenKind::Newline) ||
+        CurToken->Is(Lex::TokenKind::RCurBracket)) {
+      if (CurFn->GetType() == "") {
+        return std::make_unique<AST::ReturnStmt>(nullptr);
+      } else {
+        throw ParseException{"Function return type differs from the type of the "
+                             "expression in return statement"};
+      }
     }
-    return std::make_unique<AST::ReturnStmt>(ParseExpr());
+    auto expr{ParseExpr()};
+    if (expr->GetType() == CurFn->GetType()) {
+      return std::make_unique<AST::ReturnStmt>(std::move(expr));
+    } else {
+      throw ParseException{"Function return type differs from the type of the expression "
+                           "in return statement"};
+    }
+  } // case Lex::TokenKind::Return
 
   default:
     return ParseExpr();

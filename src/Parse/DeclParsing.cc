@@ -113,8 +113,12 @@ std::unique_ptr<AST::FnDecl> Parser::ParseFnDecl() {
     Advance();
   }
 
-  auto fnBody = ParseBlock();
-  return std::make_unique<AST::FnDecl>(fnName, fnReturnType, fnArgs, fnBody);
+  CurFn = std::make_unique<AST::FnDecl>(fnName, fnReturnType, fnArgs);
+
+  CurFn->SetBody(ParseBlock());
+  auto result = std::move(CurFn);
+  CurFn = nullptr;
+  return result;
 }
 } // namespace Parse
 } // namespace Language

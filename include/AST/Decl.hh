@@ -20,7 +20,7 @@ class VarDecl : public Decl {
 
  public:
   VarDecl(const std::string &name, const std::string &type, const bool mut,
-          std::unique_ptr<Expr>& value)
+          std::unique_ptr<Expr> &value)
       : Decl(name, type), Mutable(mut), Value(std::move(value)) {}
 
   void Print(const i32 offset = 0) override;
@@ -44,9 +44,14 @@ class FnDecl : public Decl {
 
  public:
   FnDecl(const std::string &name, const std::string &returnType,
+         std::vector<Argument> args)
+      : Decl(name, returnType), Args(std::move(args)) {}
+
+  FnDecl(const std::string &name, const std::string &returnType,
          std::vector<Argument> args, std::shared_ptr<Block> &body)
       : Decl(name, returnType), Args(std::move(args)), Body(std::move(body)) {}
 
+  void SetBody(std::shared_ptr<Block> body) { Body = body; }
   void Print(const i32 offset = 0) override;
 };
 } // namespace AST
