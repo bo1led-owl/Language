@@ -6,21 +6,23 @@
 
 namespace Language {
 namespace AST {
-void VarDecl::Print(i32 offset) {
+void VarDecl::Print(const i32 offset) {
   Print::MakeOffset(offset);
 
   std::cout << "VarDecl " << Name << ' ';
   if (Mutable) {
     std::cout << "mut ";
   }
-  std::cout << '\"' << Type << "\" = ";
+  std::cout << '\"' << Type << "\"";
   if (Value != nullptr) {
-    std::cout << '\n';
+    std::cout << " = \n";
     Value->Print(offset + 1);
+  } else {
+    std::cout << '\n';
   }
 }
 
-void FnDecl::Print(i32 offset) {
+void FnDecl::Print(const i32 offset) {
   std::cout << "FnDecl \"";
   if (Type.empty()) {
     std::cout << "void";
@@ -29,8 +31,11 @@ void FnDecl::Print(i32 offset) {
   }
   std::cout << "\" " << Name;
   std::cout << '(';
-  for (const FnDecl::Argument &arg : Args) {
-    std::cout << arg.Type << ", ";
+  for (size_t i{}; i < Args.size(); ++i) {
+    std::cout << Args[i].Type;
+    if (i != Args.size() - 1) {
+      std::cout << ", ";
+    }
   }
   std::cout << ") ";
   Body->Print(offset);

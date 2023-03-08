@@ -5,7 +5,7 @@
 
 namespace Language {
 namespace AST {
-void DeclStmt::Print(i32 offset) {
+void DeclStmt::Print(const i32 offset) {
   Print::MakeOffset(offset);
 
   std::cout << "DeclStmt {\n";
@@ -15,7 +15,7 @@ void DeclStmt::Print(i32 offset) {
   std::cout << "}\n";
 }
 
-void BlockStmt::Print(i32 offset) {
+void BlockStmt::Print(const i32 offset) {
   Print::MakeOffset(offset);
 
   std::cout << "BlockStmt ";

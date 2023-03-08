@@ -17,7 +17,7 @@ class DeclStmt : public Stmt {
  public:
   DeclStmt(std::shared_ptr<Decl> decl) : Value(decl) {}
 
-  void Print(i32 offset = 0) override;
+  void Print(const i32 offset = 0) override;
   inline std::shared_ptr<Decl> GetValue() const { return Value; }
 };
 
@@ -27,7 +27,7 @@ class BlockStmt : public Stmt {
  public:
   BlockStmt(std::shared_ptr<Block> block) : Value(block) {}
 
-  void Print(i32 offset = 0) override;
+  void Print(const i32 offset = 0) override;
   std::shared_ptr<Block> GetValue() { return Value; }
 };
 } // namespace AST

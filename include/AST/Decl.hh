@@ -23,7 +23,7 @@ class VarDecl : public Decl {
           std::unique_ptr<Expr>& value)
       : Decl(name, type), Mutable(mut), Value(std::move(value)) {}
 
-  void Print(i32 offset = 0) override;
+  void Print(const i32 offset = 0) override;
   inline bool IsMutable() const { return Mutable; }
   inline std::unique_ptr<Expr> &GetValue() { return Value; }
 };
@@ -47,7 +47,7 @@ class FnDecl : public Decl {
          std::vector<Argument> args, std::shared_ptr<Block> &body)
       : Decl(name, returnType), Args(std::move(args)), Body(std::move(body)) {}
 
-  void Print(i32 offset = 0) override;
+  void Print(const i32 offset = 0) override;
 };
 } // namespace AST
 } // namespace Language

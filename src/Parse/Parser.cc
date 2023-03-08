@@ -28,6 +28,15 @@ std::unordered_map<Lex::TokenKind, i32> Parser::BinopPrecedence{
     {Lex::TokenKind::Slash, 40},       // -
 };
 
+bool Parser::VariableDeclared(const std::string &name) {
+  if (CurBlock != nullptr) {
+    if (CurBlock->VariableDeclared(name)) {
+      return true;
+    }
+  }
+  return Variables.contains(name);
+}
+
 std::vector<std::shared_ptr<AST::Decl>> Parser::Parse() {
   std::vector<std::shared_ptr<AST::Decl>> AST;
 

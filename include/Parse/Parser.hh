@@ -56,7 +56,9 @@ class Parser {
   }
 
   /// Move to the next token
-  void Advance() { CurToken = Lexer.LexToken(); }
+  inline void Advance() { CurToken = Lexer.LexToken(); }
+
+  bool VariableDeclared(const std::string &name);
 
   std::string GetFunctionType(const std::string &name) {
     if (!Functions.contains(name)) {
@@ -66,16 +68,14 @@ class Parser {
   }
 
   std::string GetVariableType(const std::string &name) {
-    std::shared_ptr<AST::VarDecl> var{CurBlock->SearchForVariable(name)};
-
-    if (var == nullptr) {
-      if (!Functions.contains(name)) {
-        throw ParseException{"Error: cannot find variable with name " + name};
+    if (VariableDeclared(name)) {
+      if (!Variables.contains(name)) {
+        return CurBlock->GetVarDecl(name)->GetType();
       } else {
-        return Functions[name]->GetType();
+        return Variables[name]->GetType();
       }
     }
-    return var->GetType();
+    throw ParseException{"Error: cannot find variable with name " + name};
   }
 
   std::unique_ptr<AST::VarDecl> ParseVarDecl();

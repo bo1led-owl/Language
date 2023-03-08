@@ -6,18 +6,27 @@
 
 namespace Language {
 namespace AST {
-const std::shared_ptr<VarDecl> Block::SearchForVariable(const std::string &name) {
+bool Block::VariableDeclared(const std::string &name) {
+  if (Variables.contains(name)) {
+    return true;
+  }
+  if (ParentBlock != nullptr) {
+    return ParentBlock->VariableDeclared(name);
+  }
+
+  return false;
+}
+
+std::shared_ptr<VarDecl> Block::GetVarDecl(const std::string &name) {
   if (Variables.contains(name))
     return Variables[name];
   if (ParentBlock != nullptr)
-    return ParentBlock->SearchForVariable(name);
+    return ParentBlock->GetVarDecl(name);
 
   return nullptr;
 }
 
-void Block::Print(i32 offset) {
-  // Print::MakeOffset(offset);
-
+void Block::Print(const i32 offset) {
   std::cout << "{";
   if (Body.size() != 0) {
     std::cout << '\n';

@@ -1,4 +1,5 @@
 #include "Lex/Token.hh"
+#include "Lex/TokenKind.hh"
 #include "Parse/Exception.hh"
 #include "Parse/Parser.hh"
 #include <iostream>
@@ -14,6 +15,9 @@ std::unique_ptr<AST::VarDecl> Parser::ParseVarDecl() {
 
   THROW_IF_TOKEN_IS_NOT(Lex::TokenKind::Identifier, "Syntax error: missing variable name")
   std::string varName{CurToken->GetIdentifierData()};
+  if (Functions.contains(varName) || VariableDeclared(varName)) {
+    throw ParseException{"Object with name \"" + varName + "\" is already declared"};
+  }
   // eat variable name
   Advance();
 
@@ -59,6 +63,9 @@ std::unique_ptr<AST::FnDecl> Parser::ParseFnDecl() {
     throw ParseException{"Syntax error: missing function name declaration"};
   }
   std::string fnName = CurToken->GetIdentifierData();
+  if (Functions.contains(fnName) || VariableDeclared(fnName)) {
+    throw ParseException{"Object with name \"" + fnName + "\" is already declared"};
+  }
   // eat function name
   Advance();
   THROW_IF_TOKEN_IS_NOT(Lex::TokenKind::LParen,
@@ -86,6 +93,7 @@ std::unique_ptr<AST::FnDecl> Parser::ParseFnDecl() {
     // eat argument type
     Advance();
     fnArgs.push_back(AST::FnDecl::Argument{argName, argType});
+    EAT_IF_TOKEN_IS(Lex::TokenKind::Comma)
   }
 
   // eat ")"

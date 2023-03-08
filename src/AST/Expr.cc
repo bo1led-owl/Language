@@ -7,7 +7,7 @@
 
 namespace Language {
 namespace AST {
-void BinaryExpr::Print(i32 offset) {
+void BinaryExpr::Print(const i32 offset) {
   Print::MakeOffset(offset);
 
   std::cout << "BinExpr \"";
@@ -44,27 +44,27 @@ void BinaryExpr::Print(i32 offset) {
   std::cout << "}\n";
 }
 
-void VarRefExpr::Print(i32 offset) {
+void VarRefExpr::Print(const i32 offset) {
   Print::MakeOffset(offset);
 
-  std::cout << "VarRefExpr " << Name;
-  std::cout << '\n';
+  std::cout << "VarRefExpr " << Name << '\n';
 };
 
-void CallExpr::Print(i32 offset) {
+void CallExpr::Print(const i32 offset) {
   Print::MakeOffset(offset);
 
   std::cout << "CallExpr " << Callee;
   std::cout << '(';
-  for (const std::unique_ptr<Expr> &expr : Args) {
-    expr->Print();
+  if (Args.size() > 0) {
+    std::cout << '\n';
   }
-  std::cout << ')';
-  std::cout << '\n';
+  for (size_t i{}; i < Args.size(); ++i) {
+    Args[i]->Print(offset + 1);
+  }
+  if (Args.size() > 0) {
+    Print::MakeOffset(offset);
+  }
+  std::cout << ")\n";
 }
-
-// template <typename T> void LiteralExpr<T>::Print() {
-//   std::cout << "LiteralExpr \"" << Type << "\" " << Value;
-// }
 } // namespace AST
 } // namespace Language

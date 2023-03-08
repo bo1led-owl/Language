@@ -41,7 +41,7 @@ std::unique_ptr<AST::Expr> Parser::ParsePrimaryExpr() {
 }
 
 std::unique_ptr<AST::Expr> Parser::ParseRefExpr() {
-  std::string name{CurToken->GetIdentifierData()};
+  const std::string name{CurToken->GetIdentifierData()};
   // eat identifier
   Advance();
   if (CurToken->Is(Lex::TokenKind::LParen)) {
@@ -51,9 +51,13 @@ std::unique_ptr<AST::Expr> Parser::ParseRefExpr() {
     while (CurToken->IsNot(Lex::TokenKind::RParen)) {
       args.push_back(ParseExpr());
       // eat ","
-      if (CurToken->Is(Lex::TokenKind::Comma)) {
+      switch (CurToken->GetKind()) {
+      case Lex::TokenKind::Comma:
         Advance();
-      } else {
+        break;
+      case Lex::TokenKind::RParen:
+        break;
+      default:
         throw ParseException{"Syntax error: expected \",\" or \")\" in arguments list"};
       }
     }
@@ -62,7 +66,11 @@ std::unique_ptr<AST::Expr> Parser::ParseRefExpr() {
 
     return std::make_unique<AST::CallExpr>(name, GetFunctionType(name), std::move(args));
   }
-  return std::make_unique<AST::VarRefExpr>(name, GetVariableType(name));
+  const std::string varType{GetVariableType(name)};
+  if (varType.empty()) {
+    throw ParseException{"Attempt to reference a variable with no type"};
+  }
+  return std::make_unique<AST::VarRefExpr>(name, varType);
 }
 
 std::unique_ptr<AST::Expr> Parser::ParseNumberExpr() {

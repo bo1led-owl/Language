@@ -19,7 +19,7 @@ class Decl {
   Decl(const std::string &name, const std::string &type) : Name(name), Type(type) {}
   virtual ~Decl() = default;
 
-  virtual void Print(i32 offset = 0) {
+  virtual void Print(const i32 offset = 0) {
     Print::MakeOffset(offset);
   }
 

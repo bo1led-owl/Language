@@ -17,11 +17,10 @@ template <typename T> class LiteralExpr : public Expr {
   LiteralExpr(const std::string &type) : Expr(type) {}
   LiteralExpr(const std::string &type, const T value) : Expr(type), Value(value) {}
 
-  void Print(i32 offset = 0) override {
+  void Print(const i32 offset = 0) override {
     Print::MakeOffset(offset);
 
-    std::cout << "LiteralExpr \"" << Type << "\" " << Value;
-    std::cout << '\n';
+    std::cout << "LiteralExpr \"" << Type << "\" " << Value << '\n';
   };
   inline T GetValue() const { return Value; }
 };

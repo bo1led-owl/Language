@@ -18,7 +18,7 @@ class Stmt {
   Stmt(const std::string &type) : Type(type) {}
   virtual ~Stmt() = default;
 
-  virtual void Print(i32 offset = 0) { Print::MakeOffset(offset); };
+  virtual void Print(const i32 offset = 0) { Print::MakeOffset(offset); };
 
   inline const std::string &GetType() const { return Type; }
 };

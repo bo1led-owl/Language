@@ -22,7 +22,7 @@ class BinaryExpr : public Expr {
              std::unique_ptr<Expr> rhs)
       : Expr(lhs->GetType()), Operator(op), LHS(std::move(lhs)), RHS(std::move(rhs)) {}
 
-  void Print(i32 offset = 0) override;
+  void Print(const i32 offset = 0) override;
   inline Lex::TokenKind GetOperator() const { return Operator; }
 };
 
@@ -33,7 +33,7 @@ class VarRefExpr : public Expr {
  public:
   VarRefExpr(const std::string &name, const std::string &type) : Expr(type), Name(name) {}
 
-  void Print(i32 offset = 0) override;
+  void Print(const i32 offset = 0) override;
   inline const std::string &GetName() const { return Name; }
 };
 
@@ -47,7 +47,7 @@ class CallExpr : public Expr {
            std::vector<std::unique_ptr<Expr>> args)
       : Expr(type), Callee(callee), Args(std::move(args)) {}
 
-  void Print(i32 offset = 0) override;
+  void Print(const i32 offset = 0) override;
   inline const std::string &GetCallee() { return Callee; }
   inline const std::vector<std::unique_ptr<Expr>> &GetArgs() { return Args; }
 };
