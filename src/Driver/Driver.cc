@@ -20,13 +20,13 @@ void Driver::PrintTokens() {
 void Driver::PrintAST() {
   try {
     const auto AST = Parser.Parse();
-
     for (const auto &decl : AST) {
-      // std::cout << typeid(*decl).name() << '\n';
       decl->Print();
     }
-  } catch (Parse::ParseException e) {
-    std::cout << e.what() << '\n';
+  } catch (const Parse::ParseException e) {
+    std::cout << "Error on line " << Lexer.GetCurLine() << " column " << Lexer.GetCurColumn()
+              << ":\n"
+              << e.what() << '\n';
     return;
   }
 }

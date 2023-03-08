@@ -3,6 +3,7 @@
 #include "Parse/Exception.hh"
 #include "Parse/Parser.hh"
 #include <iostream>
+#include <unordered_set>
 
 namespace Language {
 namespace Parse {
@@ -13,10 +14,11 @@ std::unique_ptr<AST::VarDecl> Parser::ParseVarDecl() {
   bool mut{CurToken->Is(Lex::TokenKind::Mut)};
   EAT_IF_TOKEN_IS(Lex::TokenKind::Mut)
 
-  THROW_IF_TOKEN_IS_NOT(Lex::TokenKind::Identifier, "Syntax error: missing variable name")
+  THROW_IF_TOKEN_IS_NOT(Lex::TokenKind::Identifier, "missing variable name")
   std::string varName{CurToken->GetIdentifierData()};
-  if (Functions.contains(varName) || VariableDeclared(varName)) {
-    throw ParseException{"Object with name \"" + varName + "\" is already declared"};
+  if (VariableDeclared(varName) ||
+      (CurFn != nullptr && CurFn->GetArgumentByName(varName) != nullptr)) {
+    throw ParseException{"variable with name \"" + varName + "\" is already declared"};
   }
   // eat variable name
   Advance();
@@ -26,7 +28,7 @@ std::unique_ptr<AST::VarDecl> Parser::ParseVarDecl() {
     // eat ":"
     Advance();
     THROW_IF_TOKEN_IS_NOT(Lex::TokenKind::Identifier,
-                          "Syntax error: missing variable type")
+                          "missing variable type")
     varType = CurToken->GetIdentifierData();
     // eat variable type
     Advance();
@@ -46,7 +48,7 @@ std::unique_ptr<AST::VarDecl> Parser::ParseVarDecl() {
       CurToken->IsNot(Lex::TokenKind::EndOfInput) &&
       CurToken->IsNot(Lex::TokenKind::LCurBracket) &&
       CurToken->IsNot(Lex::TokenKind::RCurBracket)) {
-    throw ParseException{"Syntax error: unexpected token at the end of statement"};
+    throw ParseException{"unexpected token at the end of statement"};
   }
 
   // eat newline and NOT eat end of input
@@ -60,34 +62,45 @@ std::unique_ptr<AST::FnDecl> Parser::ParseFnDecl() {
   Advance();
 
   if (CurToken->IsNot(Lex::TokenKind::Identifier)) {
-    throw ParseException{"Syntax error: missing function name declaration"};
+    throw ParseException{"missing function name declaration"};
   }
   std::string fnName = CurToken->GetIdentifierData();
-  if (Functions.contains(fnName) || VariableDeclared(fnName)) {
-    throw ParseException{"Object with name \"" + fnName + "\" is already declared"};
+  if (Functions.contains(fnName)) {
+    throw ParseException{"function with name \"" + fnName + "\" is already declared"};
   }
   // eat function name
   Advance();
   THROW_IF_TOKEN_IS_NOT(Lex::TokenKind::LParen,
-                        "Syntax error: expected function arguments")
+                        "expected function arguments")
   // eat "("
   Advance();
 
   std::vector<AST::FnDecl::Argument> fnArgs;
+  std::unordered_set<std::string> argNames;
   while (CurToken->IsNot(Lex::TokenKind::RParen)) {
     THROW_IF_TOKEN_IS_NOT(Lex::TokenKind::Identifier,
-                          "Syntax error: missing function parameter name declaration")
+                          "missing function parameter name declaration")
     std::string argName = CurToken->GetIdentifierData();
+    if (argNames.contains(argName)) {
+      throw ParseException{"argument with name " + argName +
+                           " is already declared in that function"};
+    }
+    if (VariableDeclared(argName)) {
+      throw ParseException{
+          "variable with name \"" + argName +
+          "\" is already declared, this name cannot be used as an argument name"};
+    }
+    argNames.emplace(argName);
     // eat argument name
     Advance();
     THROW_IF_TOKEN_IS_NOT(Lex::TokenKind::Colon,
-                          "Syntax error: missing function parameter type declaration")
+                          "missing function parameter type declaration")
     // eat ":"
     Advance();
     THROW_IF_TOKEN_IS_NOT(Lex::TokenKind::Identifier,
-                          "Syntax error: missing function parameter type declaration")
+                          "missing function parameter type declaration")
     if (!Types.contains(CurToken->GetIdentifierData())) {
-      throw ParseException{"Unknown parameter type"};
+      throw ParseException{"unknown parameter type"};
     }
     std::string argType{CurToken->GetIdentifierData()};
     // eat argument type
@@ -104,10 +117,10 @@ std::unique_ptr<AST::FnDecl> Parser::ParseFnDecl() {
     // eat "->"
     Advance();
     THROW_IF_TOKEN_IS_NOT(Lex::TokenKind::Identifier,
-                          "Syntax error: missing function return type")
+                          "missing function return type")
     fnReturnType = CurToken->GetIdentifierData();
     if (!Types.contains(fnReturnType)) {
-      throw ParseException{"Unknown function return type"};
+      throw ParseException{"unknown function return type"};
     }
     // eat return type
     Advance();
@@ -117,7 +130,7 @@ std::unique_ptr<AST::FnDecl> Parser::ParseFnDecl() {
 
   CurFn->SetBody(ParseBlock());
   if (CurFn->GetType() != "" && !CurFn->HasReturnStmt()) {
-    throw ParseException{"Function do not return a value"};
+    throw ParseException{"function do not return a value"};
   }
   auto result = std::move(CurFn);
   CurFn = nullptr;

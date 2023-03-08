@@ -9,7 +9,7 @@ namespace Language {
 namespace Parse {
 std::shared_ptr<AST::Block> Parser::ParseBlock() {
   THROW_IF_TOKEN_IS_NOT(Lex::TokenKind::LCurBracket,
-                        "Syntax error: missing block opening curly bracket")
+                        "missing block opening curly bracket")
   // eat "{"
   Advance();
   EAT_IF_TOKEN_IS(Lex::TokenKind::Newline)
@@ -17,8 +17,7 @@ std::shared_ptr<AST::Block> Parser::ParseBlock() {
   CurBlock = std::make_unique<AST::Block>(CurBlock);
 
   while (CurToken->IsNot(Lex::TokenKind::RCurBracket)) {
-    THROW_IF_TOKEN_IS(Lex::TokenKind::EndOfInput,
-                      "Syntax error: expected closed statement block")
+    THROW_IF_TOKEN_IS(Lex::TokenKind::EndOfInput, "expected closed statement block")
     EAT_IF_TOKEN_IS(Lex::TokenKind::Newline)
 
     switch (CurToken->GetKind()) {
@@ -49,8 +48,7 @@ std::unique_ptr<AST::Stmt> Parser::ParseStmt() {
     Advance();
   }
 
-  THROW_IF_TOKEN_IS(Lex::TokenKind::EndOfInput,
-                    "Syntax error: expected statement, found end of input")
+  THROW_IF_TOKEN_IS(Lex::TokenKind::EndOfInput, "expected statement, found end of input")
 
   switch (CurToken->GetKind()) {
   case Lex::TokenKind::Let:
@@ -60,6 +58,9 @@ std::unique_ptr<AST::Stmt> Parser::ParseStmt() {
     return std::make_unique<AST::BlockStmt>(ParseBlock());
 
   case Lex::TokenKind::Return: {
+    static const ParseException returnTypeException{
+        "function return type differs from the type of the "
+        "expression in return statement"};
     // eat "return"
     Advance();
     CurFn->AddReturnStmt();
@@ -68,16 +69,14 @@ std::unique_ptr<AST::Stmt> Parser::ParseStmt() {
       if (CurFn->GetType() == "") {
         return std::make_unique<AST::ReturnStmt>(nullptr);
       } else {
-        throw ParseException{"Function return type differs from the type of the "
-                             "expression in return statement"};
+        throw returnTypeException;
       }
     }
     auto expr{ParseExpr()};
     if (expr->GetType() == CurFn->GetType()) {
       return std::make_unique<AST::ReturnStmt>(std::move(expr));
     } else {
-      throw ParseException{"Function return type differs from the type of the expression "
-                           "in return statement"};
+      throw returnTypeException;
     }
   } // case Lex::TokenKind::Return
 

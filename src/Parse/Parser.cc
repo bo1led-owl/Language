@@ -58,7 +58,7 @@ std::vector<std::shared_ptr<AST::Decl>> Parser::Parse() {
     } break;
 
     default:
-      throw ParseException{"Syntax error: expected function or variable declaration"};
+      throw ParseException{"expected function or variable declaration"};
     }
   }
 

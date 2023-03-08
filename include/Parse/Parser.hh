@@ -63,7 +63,7 @@ class Parser {
 
   std::string GetFunctionType(const std::string &name) {
     if (!Functions.contains(name)) {
-      throw ParseException{"Error: cannot find function with name " + name};
+      throw ParseException{"cannot find function with name " + name};
     }
     return Functions[name]->GetType();
   }
@@ -76,7 +76,7 @@ class Parser {
         return Variables[name]->GetType();
       }
     }
-    throw ParseException{"Error: cannot find variable with name " + name};
+    throw ParseException{"cannot find variable with name " + name};
   }
 
   std::unique_ptr<AST::VarDecl> ParseVarDecl();

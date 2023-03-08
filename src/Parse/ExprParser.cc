@@ -1,4 +1,5 @@
 #include <memory>
+#include <string>
 
 #include "AST/Decl.hh"
 #include "AST/Expr.hh"
@@ -15,13 +16,15 @@ std::unique_ptr<AST::Expr> Parser::ParseExpr() {
 
 std::unique_ptr<AST::Expr> Parser::ParsePrimaryExpr() {
   THROW_IF_TOKEN_IS(Lex::TokenKind::EndOfInput,
-                    "Syntax error: expected expression, found end of input")
+                    "expected expression, found end of input")
   switch (CurToken->GetKind()) {
   // expression in parentheses
   case Lex::TokenKind::LParen: {
     // eat "("
     Advance();
     auto result{ParseExpr()};
+    THROW_IF_TOKEN_IS_NOT(Lex::TokenKind::RParen,
+                          "expected closing parenthesis")
     // eat ")"
     Advance();
     return result;
@@ -35,7 +38,7 @@ std::unique_ptr<AST::Expr> Parser::ParsePrimaryExpr() {
   case Lex::TokenKind::Number:
     return ParseNumberExpr();
   default:
-    throw ParseException{"Unknown expression"};
+    throw ParseException{"unknown expression"};
   }
 }
 
@@ -44,30 +47,54 @@ std::unique_ptr<AST::Expr> Parser::ParseRefExpr() {
   // eat identifier
   Advance();
   if (CurToken->Is(Lex::TokenKind::LParen)) {
-    // eat "("
-    Advance();
-    std::vector<std::unique_ptr<AST::Expr>> args;
-    while (CurToken->IsNot(Lex::TokenKind::RParen)) {
-      args.push_back(ParseExpr());
-      // eat ","
-      switch (CurToken->GetKind()) {
-      case Lex::TokenKind::Comma:
-        Advance();
-        break;
-      case Lex::TokenKind::RParen:
-        break;
-      default:
-        throw ParseException{"Syntax error: expected \",\" or \")\" in arguments list"};
+    if (Functions.contains(name)) {
+      const std::shared_ptr<AST::FnDecl> fnRef = Functions[name];
+      // eat "("
+      Advance();
+      std::vector<std::unique_ptr<AST::Expr>> args;
+      while (CurToken->IsNot(Lex::TokenKind::RParen)) {
+        args.push_back(ParseExpr());
+        const std::unique_ptr<AST::FnDecl::Argument> curArg{
+            fnRef->GetArgumentByIndex(args.size() - 1)};
+        if (curArg == nullptr) {
+          throw ParseException{"bad argument list for call of function \"" + name +
+                               "\": too many arguments passed"};
+        }
+        if (args[args.size() - 1]->GetType() != curArg->Type) {
+          throw ParseException{"bad argument list for call of function \"" + name +
+                               "\": argument \"" + curArg->Name + "\" type differs"};
+        }
+        switch (CurToken->GetKind()) {
+        case Lex::TokenKind::Comma:
+          Advance();
+          break;
+        case Lex::TokenKind::RParen:
+          break;
+        default:
+          throw ParseException{"expected \",\" or \")\" in arguments list"};
+        }
       }
-    }
-    // eat ")"
-    Advance();
+      // eat ")"
+      Advance();
 
-    return std::make_unique<AST::CallExpr>(name, GetFunctionType(name), std::move(args));
+      if (args.size() < fnRef->GetArgCount()) {
+        throw ParseException{"bad argument list for call of function \"" + name +
+                             "\": too few arguments passed"};
+      }
+
+      return std::make_unique<AST::CallExpr>(name, GetFunctionType(name),
+                                             std::move(args));
+    }
+    throw ParseException{"function with name \"" + name + "\" is not declared"};
   }
-  const std::string varType{GetVariableType(name)};
-  if (varType.empty()) {
-    throw ParseException{"Attempt to reference a variable with no type"};
+  std::string varType;
+  if (VariableDeclared(name)) {
+    varType = GetVariableType(name);
+    if (varType.empty()) {
+      throw ParseException{"attempt to reference a variable with no type"};
+    }
+  } else if (const auto arg = CurFn->GetArgumentByName(name); arg != nullptr) {
+    varType = arg->Type;
   }
   return std::make_unique<AST::VarRefExpr>(name, varType);
 }
@@ -109,7 +136,7 @@ std::unique_ptr<AST::Expr> Parser::ParseBinaryExpr(const i32 opPrec,
 
     auto RHS = ParsePrimaryExpr();
     if (RHS == nullptr) {
-      throw ParseException{"Syntax error: expected binary operator second argument"};
+      throw ParseException{"expected binary operator second argument"};
     }
     i32 NextPrec = GetCurTokenPrecedence();
     if (CurPrec < NextPrec) {

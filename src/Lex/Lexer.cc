@@ -21,6 +21,15 @@
 
 namespace Language {
 namespace Lex {
+char Lexer::Advance() {
+  if (CurChar == '\n') {
+    ++CurLine;
+    CurColumn = 0;
+  }
+  ++CurColumn;
+  return CurChar = Input.get();
+}
+
 std::unique_ptr<Token> Lexer::LexToken() {
   REGISTER_CHAR(EOF, TokenKind::EndOfInput)
   REGISTER_CHAR('\0', TokenKind::EndOfInput)

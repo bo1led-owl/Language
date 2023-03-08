@@ -37,6 +37,9 @@ class VarRefExpr : public Expr {
   inline const std::string &GetName() const { return Name; }
 };
 
+/// Function argument reference expression class
+class ArgRefExpr : public VarRefExpr {};
+
 /// Function call expression class
 class CallExpr : public Expr {
   std::string Callee;
