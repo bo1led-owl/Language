@@ -20,12 +20,12 @@ class Token {
   void Print() const;
   inline TokenKind GetKind() const { return Kind; }
 
-  inline virtual std::string GetNumberData() const {
+  virtual std::string GetNumberData() const {
     assert(Kind == TokenKind::Number && "The token is not a NumberToken");
     return "";
   }
 
-  inline virtual std::string GetIdentifierData() const {
+  virtual std::string GetIdentifierData() const {
     assert(Kind == TokenKind::Identifier && "The token is not an IdentifierToken");
     return "";
   }

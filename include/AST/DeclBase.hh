@@ -8,7 +8,6 @@
 
 namespace Language {
 namespace AST {
-
 /// Base AST declaration class
 class Decl {
  protected:
@@ -19,6 +18,7 @@ class Decl {
   Decl(const std::string &name, const std::string &type) : Name(name), Type(type) {}
   virtual ~Decl() = default;
 
+  /// Print Decl as an AST element
   virtual void Print(const i32 offset = 0) {
     Print::MakeOffset(offset);
   }

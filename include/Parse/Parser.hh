@@ -1,6 +1,7 @@
 #ifndef PARSER_HH
 #define PARSER_HH
 
+#include <cstdint>
 #include <memory>
 #include <string>
 #include <unordered_map>
@@ -32,6 +33,11 @@
     Advance();                                                                           \
   }
 
+#define EAT_WHILE_TOKEN_IS(Kind)                                                         \
+  while (CurToken->Is(Kind)) {                                                              \
+    Advance();                                                                           \
+  }
+
 namespace Language {
 namespace Parse {
 /// Class for parsing lexed tokens
@@ -44,13 +50,11 @@ class Parser {
   std::unordered_map<std::string, std::shared_ptr<AST::FnDecl>> Functions;
   std::unordered_map<std::string, std::shared_ptr<AST::VarDecl>> Variables;
 
-  const std::unordered_set<std::string> Types{"bool", "i8",  "i16", "i32", "i64", "u8",
-                                              "u16",  "u32", "u64", "f32", "f64"};
-
+  static const std::unordered_set<std::string> Types;
   static std::unordered_map<Lex::TokenKind, i32> BinopPrecedence;
 
   i32 GetCurTokenPrecedence() {
-    int TokPrec = BinopPrecedence[CurToken->GetKind()];
+    i32 TokPrec = BinopPrecedence[CurToken->GetKind()];
     if (TokPrec <= 0)
       return -1;
     return TokPrec;
@@ -59,15 +63,20 @@ class Parser {
   /// Move to the next token
   inline void Advance() { CurToken = Lexer.LexToken(); }
 
-  bool VariableDeclared(const std::string &name);
+  inline bool FunctionDeclared(const std::string &name) {
+    return Functions.contains(name);
+  }
 
-  std::string GetFunctionType(const std::string &name) {
-    if (!Functions.contains(name)) {
-      throw ParseException{"cannot find function with name " + name};
-    }
+  /// Returns type of the function with given name
+  inline std::string GetFunctionType(const std::string &name) {
     return Functions[name]->GetType();
   }
 
+  /// Returns true if a variable with given name is declared in global scope or in
+  /// CurBlock or in one of its ancestors
+  bool VariableDeclared(const std::string &name);
+
+  /// Returns type of the variable with given name
   std::string GetVariableType(const std::string &name) {
     if (VariableDeclared(name)) {
       if (!Variables.contains(name)) {
@@ -85,16 +94,14 @@ class Parser {
   std::unique_ptr<AST::Stmt> ParseStmt();
   std::shared_ptr<AST::Block> ParseBlock();
 
-  /// Parse any expression but binary
+  std::unique_ptr<AST::Expr> ParseExpr();
   std::unique_ptr<AST::Expr> ParsePrimaryExpr();
+  std::unique_ptr<AST::Expr> ParseBinExpr(i32 opPrec, std::unique_ptr<AST::Expr> LHS);
   std::unique_ptr<AST::Expr> ParseRefExpr();
   std::unique_ptr<AST::Expr> ParseNumberExpr();
-  std::unique_ptr<AST::Expr> ParseBinaryExpr(i32 opPrec, std::unique_ptr<AST::Expr> LHS);
 
  public:
   Parser(Lex::Lexer &lexer) : Lexer(lexer), CurToken(Lexer.LexToken()) {}
-
-  std::unique_ptr<AST::Expr> ParseExpr();
 
   std::vector<std::shared_ptr<AST::Decl>> Parse();
 };

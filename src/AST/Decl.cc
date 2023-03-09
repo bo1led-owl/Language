@@ -9,7 +9,6 @@ namespace Language {
 namespace AST {
 void VarDecl::Print(const i32 offset) {
   Print::MakeOffset(offset);
-
   std::cout << "VarDecl " << Name << ' ';
   if (Mutable) {
     std::cout << "mut ";
@@ -52,7 +51,8 @@ FnDecl::GetArgumentByName(const std::string &name) const {
   return nullptr;
 }
 
-std::unique_ptr<AST::FnDecl::Argument> FnDecl::GetArgumentByIndex(const size_t index) const {
+std::unique_ptr<AST::FnDecl::Argument>
+FnDecl::GetArgumentByIndex(const size_t index) const {
   if (Args.size() > index) {
     return std::make_unique<AST::FnDecl::Argument>(Args[index]);
   }

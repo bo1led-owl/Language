@@ -18,6 +18,9 @@
 
 namespace Language {
 namespace Parse {
+const std::unordered_set<std::string> Parser::Types{
+    "bool", "i8", "i16", "i32", "i64", "u8", "u16", "u32", "u64", "f32", "f64"};
+
 std::unordered_map<Lex::TokenKind, i32> Parser::BinopPrecedence{
     {Lex::TokenKind::Equals, 10},      // <
     {Lex::TokenKind::LessThan, 20},    // <

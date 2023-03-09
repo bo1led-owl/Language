@@ -7,9 +7,8 @@
 
 namespace Language {
 namespace AST {
-void BinaryExpr::Print(const i32 offset) {
+void BinExpr::Print(const i32 offset) {
   Print::MakeOffset(offset);
-
   std::cout << "BinExpr \"";
   switch (Operator) {
   case Lex::TokenKind::Plus:
@@ -46,13 +45,11 @@ void BinaryExpr::Print(const i32 offset) {
 
 void VarRefExpr::Print(const i32 offset) {
   Print::MakeOffset(offset);
-
   std::cout << "VarRefExpr " << Name << '\n';
 };
 
 void CallExpr::Print(const i32 offset) {
   Print::MakeOffset(offset);
-
   std::cout << "CallExpr " << Callee;
   std::cout << '(';
   if (Args.size() > 0) {

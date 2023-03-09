@@ -18,8 +18,8 @@ class Stmt {
   Stmt(const std::string &type) : Type(type) {}
   virtual ~Stmt() = default;
 
+  /// Print Stmt as an AST element
   virtual void Print(const i32 offset = 0) { Print::MakeOffset(offset); };
-
   inline const std::string &GetType() const { return Type; }
 };
 } // namespace AST
