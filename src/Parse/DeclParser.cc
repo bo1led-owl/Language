@@ -1,9 +1,9 @@
+#include <unordered_set>
+
 #include "Lex/Token.hh"
 #include "Lex/TokenKind.hh"
 #include "Parse/Exception.hh"
 #include "Parse/Parser.hh"
-#include <iostream>
-#include <unordered_set>
 
 namespace Language {
 namespace Parse {

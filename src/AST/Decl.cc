@@ -3,6 +3,7 @@
 
 #include "AST/Block.hh"
 #include "AST/Decl.hh"
+#include "Parse/Exception.hh"
 #include "Print/Print.hh"
 
 namespace Language {
@@ -19,6 +20,16 @@ void VarDecl::Print(const i32 offset) {
     Value->Print(offset + 1);
   } else {
     std::cout << '\n';
+  }
+}
+
+void VarDecl::SetValue(std::unique_ptr<AST::Expr> &value) {
+  if (Mutable) {
+    Value = std::move(value);
+  } else {
+    // assignment to an unmutabe variable
+    throw Parse::ParseException{
+        "cannot assign a value to a variable that is not mutable"};
   }
 }
 

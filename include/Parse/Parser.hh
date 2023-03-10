@@ -75,6 +75,9 @@ class Parser {
   /// Returns true if a variable with given name is declared in global scope or in
   /// CurBlock or in one of its ancestors
   bool VariableDeclared(const std::string &name);
+  /// Returns a variable declaration from the current block or one of its ancestors if a
+  /// variable with given name exists, else returns nullptr
+  std::shared_ptr<AST::VarDecl> GetVarDecl(const std::string &name);
 
   /// Returns type of the variable with given name
   std::string GetVariableType(const std::string &name) {

@@ -123,7 +123,7 @@ std::unique_ptr<AST::Expr> Parser::ParseNumberExpr() {
   std::string number;
   number = CurToken->GetNumberData();
   // eat integer part of a number
-  Advance(); 
+  Advance();
 
   if (CurToken->Is(Lex::TokenKind::Fullstop)) {
     // eat "."
@@ -132,7 +132,7 @@ std::unique_ptr<AST::Expr> Parser::ParseNumberExpr() {
     if (CurToken->Is(Lex::TokenKind::Number)) {
       number += CurToken->GetNumberData();
       // eat fractional part of a number
-      Advance(); 
+      Advance();
     }
     return std::make_unique<AST::LiteralExpr<f64>>("f64", std::stod(number));
   }
@@ -152,7 +152,7 @@ std::unique_ptr<AST::Expr> Parser::ParseBinExpr(const i32 opPrec,
       return LHS;
     Lex::TokenKind BinOp = CurToken->GetKind();
     // eat operator
-    Advance(); 
+    Advance();
 
     auto RHS = ParsePrimaryExpr();
     if (RHS == nullptr) {
@@ -165,6 +165,29 @@ std::unique_ptr<AST::Expr> Parser::ParseBinExpr(const i32 opPrec,
       RHS = ParseBinExpr(CurPrec + 1, std::move(RHS));
     }
 
+    if (LHS->GetType() != RHS->GetType()) {
+      // LHS and RHS type mismatch
+      throw ParseException{"operand types mismatch"};
+    }
+
+    if (BinOp == Lex::TokenKind::Equals) {
+      AST::VarRefExpr *LHSExpr = static_cast<AST::VarRefExpr *>(LHS.get());
+      if (LHSExpr == nullptr) {
+        // left operand of a "=" is not variable reference
+        throw ParseException{"destination of an assignment must be a variable"};
+      }
+      const std::shared_ptr<AST::VarDecl> var{GetVarDecl(LHSExpr->GetName())};
+      if (var == nullptr) {
+        // cannot find variable with that name
+        throw ParseException{"cannot find variable with name \"" + LHSExpr->GetName() +
+                             "\""};
+      }
+      if (!var->IsMutable()) {
+        // unmutable variable
+        var->SetValue(RHS);
+        // initialize a variable
+      }
+    }
     LHS = std::make_unique<AST::BinExpr>(BinOp, std::move(LHS), std::move(RHS));
   }
 }

@@ -28,6 +28,7 @@ class VarDecl : public Decl {
 
   inline bool IsMutable() const { return Mutable; }
   inline const std::unique_ptr<Expr> &GetValue() { return Value; }
+  void SetValue(std::unique_ptr<AST::Expr> &value);
 };
 
 /// Function declaration class

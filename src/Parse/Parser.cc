@@ -1,3 +1,4 @@
+#include <cstddef>
 #include <memory>
 #include <string>
 #include <unordered_map>
@@ -22,7 +23,7 @@ const std::unordered_set<std::string> Parser::Types{
     "bool", "i8", "i16", "i32", "i64", "u8", "u16", "u32", "u64", "f32", "f64"};
 
 std::unordered_map<Lex::TokenKind, i32> Parser::BinopPrecedence{
-    {Lex::TokenKind::Equals, 10},      // <
+    {Lex::TokenKind::Equals, 5},       // <
     {Lex::TokenKind::LessThan, 20},    // <
     {Lex::TokenKind::GreaterThan, 20}, // >
     {Lex::TokenKind::Plus, 30},        // +
@@ -38,6 +39,13 @@ bool Parser::VariableDeclared(const std::string &name) {
     }
   }
   return Variables.contains(name);
+}
+
+std::shared_ptr<AST::VarDecl> Parser::GetVarDecl(const std::string &name) {
+  if (Variables.contains(name)) {
+    return Variables[name];
+  }
+  return CurBlock->GetVarDecl(name);
 }
 
 std::vector<std::shared_ptr<AST::Decl>> Parser::Parse() {
