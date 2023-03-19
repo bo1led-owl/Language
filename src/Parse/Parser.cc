@@ -61,11 +61,8 @@ std::vector<std::shared_ptr<AST::Decl>> Parser::Parse() {
             Functions[decl->GetName()] = decl;
         } break;
 
-        case Lex::TokenKind::Let: {
-            std::shared_ptr<AST::VarDecl> decl{ParseVarDecl()};
-            AST.emplace_back(decl);
-            Variables[decl->GetName()] = decl;
-        } break;
+        case Lex::TokenKind::Let:
+            throw ParseException{"global variables are not supported"};
 
         default:
             throw ParseException{"expected function or variable declaration"};
