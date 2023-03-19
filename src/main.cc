@@ -2,8 +2,8 @@
 #include "Types.hh"
 
 i32 main(i32 argc, char **argv) {
-  Language::Driver::Driver driver{(argc > 1) ? argv[1] : "input.txt"};
-  driver.PrintAST();
+    Language::Driver::Driver driver{(argc > 1) ? argv[1] : "input.txt"};
+    driver.Run();
 
-  return 0;
+    return 0;
 }

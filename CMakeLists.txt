@@ -10,7 +10,7 @@ set(CXX_COMPILER clang++)
 
 add_subdirectory(src)
 
-string(TOLOWER ${CMAKE_BUILD_TYPE} build_type)
+string(TOLOWER CMAKE_BUILD_TYPE build_type)
 if (build_type STREQUAL debug)
 target_compile_options(${TARGET_NAME} PUBLIC -g -Wall -Wextra)
 elseif(build_type STREQUAL release)

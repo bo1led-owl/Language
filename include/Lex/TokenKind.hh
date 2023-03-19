@@ -7,40 +7,40 @@ namespace Language {
 namespace Lex {
 /// Enum of kinds of tokens
 enum class TokenKind : i8 {
-  EndOfInput,
-  Unknown,
-  Newline,
+    EndOfInput,
+    Unknown,
+    Newline,
 
-  // keywords
-  Fn,
-  Let,
-  Mut,
-  Return,
+    // keywords
+    Fn,
+    Let,
+    Mut,
+    Return,
 
-  Identifier,
+    Identifier,
 
-  // literals
-  Number,
+    // literals
+    Number,
 
-  // characters
-  LParen,      // (
-  RParen,      // )
-  LCurBracket, // {
-  RCurBracket, // }
-  LSqBracket,  // [
-  RSqBracket,  // ]
-  Comma,       // ,
-  Fullstop,    // .
-  Colon,       // :
-  Plus,        // +
-  Minus,       // -
-  Asterisk,    // *
-  Slash,       // /
-  Equals,      // =
-  LessThan,    // <
-  GreaterThan, // >
-  LeftArrow,   // <-
-  RightArrow,  // ->
+    // characters
+    LParen,      // (
+    RParen,      // )
+    LCurBracket, // {
+    RCurBracket, // }
+    LSqBracket,  // [
+    RSqBracket,  // ]
+    Comma,       // ,
+    Fullstop,    // .
+    Colon,       // :
+    Plus,        // +
+    Minus,       // -
+    Asterisk,    // *
+    Slash,       // /
+    Equals,      // =
+    LessThan,    // <
+    GreaterThan, // >
+    LeftArrow,   // <-
+    RightArrow,  // ->
 };
 } // namespace Lex
 } // namespace Language

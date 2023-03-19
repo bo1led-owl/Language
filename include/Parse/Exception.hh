@@ -8,12 +8,12 @@ namespace Language {
 namespace Parse {
 /// Parsing exception class
 class ParseException : public std::exception {
-  std::string Message;
+    std::string Message;
 
- public:
-  ParseException(const std::string& message) : Message(message) {}
+  public:
+    ParseException(const std::string &message) : Message(message) {}
 
-  const char *what() const noexcept override { return Message.c_str(); }
+    const char *what() const noexcept override { return Message.c_str(); }
 };
 } // namespace Parse
 } // namespace Language

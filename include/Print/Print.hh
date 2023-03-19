@@ -8,9 +8,9 @@
 namespace Language {
 namespace Print {
 inline void MakeOffset(const i32 offset) {
-  for (i32 i{}; i < offset; ++i) {
-    std::cout << "  ";
-  }
+    for (i32 i{}; i < offset; ++i) {
+        std::cout << "  ";
+    }
 }
 } // namespace Print
 } // namespace Language

@@ -5,8 +5,11 @@
 #include <string>
 #include <vector>
 
+#include "AST/Decl.hh"
 #include "AST/ExprBase.hh"
 #include "AST/Stmt.hh"
+#include "Driver/Object.hh"
+#include "Driver/Scope.hh"
 #include "Lex/TokenKind.hh"
 #include "Types.hh"
 
@@ -14,31 +17,40 @@ namespace Language {
 namespace AST {
 /// Binary operation expression class
 class BinExpr : public Expr {
-  Lex::TokenKind Operator;
-  std::unique_ptr<Expr> LHS, RHS;
+    Lex::TokenKind Operator;
+    std::unique_ptr<Expr> LHS, RHS;
 
- public:
-  BinExpr(const Lex::TokenKind op, std::unique_ptr<Expr> lhs,
-             std::unique_ptr<Expr> rhs)
-      : Expr(lhs->GetType()), Operator(op), LHS(std::move(lhs)), RHS(std::move(rhs)) {}
+    template <typename T> std::any Calc(std::any a, std::any b);
 
-  /// Print BinExpr as an AST element
-  void Print(const i32 offset = 0) override;
+  public:
+    BinExpr(const Lex::TokenKind op, std::unique_ptr<Expr> lhs, std::unique_ptr<Expr> rhs)
+        : Expr(lhs->GetType()), Operator(op), LHS(std::move(lhs)), RHS(std::move(rhs)) {}
 
-  /// Returns TokenKind of the BinExpr's operator (plus, minus, etc.)
-  inline Lex::TokenKind GetOperator() const { return Operator; }
+    std::shared_ptr<Driver::Object> Exec(std::shared_ptr<Driver::Scope> scope) override;
+
+    /// Print BinExpr as an AST element
+    void Print(const i32 offset = 0) override;
+
+    /// Returns TokenKind of the BinExpr's operator (plus, minus, etc.)
+    inline Lex::TokenKind GetOperator() const { return Operator; }
 };
 
 /// Variable reference expression class
 class VarRefExpr : public Expr {
-  std::string Name;
+    std::string Name;
+    // std::shared_ptr<VarDecl> Decl;
 
- public:
-  VarRefExpr(const std::string &name, const std::string &type) : Expr(type), Name(name) {}
+  public:
+    VarRefExpr(const std::string &name, const std::string &type)
+        : Expr(type), Name(name) {}
 
-  /// Print VarRefDecl as an AST element
-  void Print(const i32 offset = 0) override;
-  inline const std::string &GetName() const { return Name; }
+    std::shared_ptr<Driver::Object> Exec(std::shared_ptr<Driver::Scope>) override;
+    void Assign(std::shared_ptr<Driver::Scope> scope);
+
+    /// Print VarRefExpr as an AST element
+    void Print(const i32 offset = 0) override;
+    inline const std::string &GetName() const { return Name; }
+    // std::shared_ptr<VarDecl> GetDecl() const { return Decl; }
 };
 
 /// Function argument reference expression class
@@ -46,18 +58,20 @@ class ArgRefExpr : public VarRefExpr {};
 
 /// Function call expression class
 class CallExpr : public Expr {
-  std::string Callee;
-  std::vector<std::unique_ptr<Expr>> Args;
+    std::string Callee;
+    std::vector<std::unique_ptr<Expr>> Args;
 
- public:
-  CallExpr(const std::string &callee, const std::string &type,
-           std::vector<std::unique_ptr<Expr>> args)
-      : Expr(type), Callee(callee), Args(std::move(args)) {}
+  public:
+    CallExpr(const std::string &callee, const std::string &type,
+             std::vector<std::unique_ptr<Expr>> args)
+        : Expr(type), Callee(callee), Args(std::move(args)) {}
 
-  /// Print CallExpr as an AST element
-  void Print(const i32 offset = 0) override;
-  inline const std::string &GetCallee() { return Callee; }
-  inline const std::vector<std::unique_ptr<Expr>> &GetArgs() { return Args; }
+    std::shared_ptr<Driver::Object> Exec(std::shared_ptr<Driver::Scope> scope) override;
+
+    /// Print CallExpr as an AST element
+    void Print(const i32 offset = 0) override;
+    inline const std::string &GetCallee() { return Callee; }
+    inline const std::vector<std::unique_ptr<Expr>> &GetArgs() { return Args; }
 };
 } // namespace AST
 } // namespace Language

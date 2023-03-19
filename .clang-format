@@ -1,3 +1,4 @@
 BasedOnStyle: LLVM
 ColumnLimit: 90
-AccessModifierOffset: -1
+AccessModifierOffset: -2
+IndentWidth: 4
