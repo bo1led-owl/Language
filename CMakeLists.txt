@@ -6,7 +6,7 @@ set(TARGET_NAME compiler)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED YES)
 set(CMAKE_CXX_EXTENSIONS NO)
-set(CXX_COMPILER clang++)
+set(CXX_COMPILER g++)
 
 add_subdirectory(src)
 
