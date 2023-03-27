@@ -63,8 +63,6 @@ std::unique_ptr<Token> Lexer::LexToken() {
     REGISTER_CHAR(')', TokenKind::RParen)
     REGISTER_CHAR('{', TokenKind::LCurBracket)
     REGISTER_CHAR('}', TokenKind::RCurBracket)
-    REGISTER_CHAR('[', TokenKind::LSqBracket)
-    REGISTER_CHAR(']', TokenKind::RSqBracket)
 
     REGISTER_CHAR(',', TokenKind::Comma)
     REGISTER_CHAR('.', TokenKind::Fullstop)

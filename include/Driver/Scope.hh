@@ -23,9 +23,7 @@ class Scope {
           std::shared_ptr<Scope> parent, std::shared_ptr<Scope> topParent)
         : Variables(variables), Parent(parent), TopParent(topParent) {}
 
-    void SetTopParent(std::shared_ptr<Scope> topParent) {
-        TopParent = topParent;
-    }
+    void SetTopParent(std::shared_ptr<Scope> topParent) { TopParent = topParent; }
 
     std::shared_ptr<Object> GetValue(const std::string &name) {
         if (Variables.contains(name)) {
@@ -46,11 +44,8 @@ class Scope {
         for (size_t i{}; i < args.size(); ++i) {
             argValues[decl->GetArgumentByIndex(i)->Name] = args[i];
         }
-        // for (size_t i{}; i < args.size(); ++i) {
-        //     const auto arg{decl->GetArgumentByIndex(i)};
-        //     argValues[arg->Name] = args[i]->Exec(SelfPtr);
-        // }
-        return Functions[name]->Exec(std::make_shared<Scope>(argValues, nullptr, TopParent));
+        return Functions[name]->Exec(
+            std::make_shared<Scope>(argValues, nullptr, TopParent));
     }
 
     const std::unique_ptr<AST::FnDecl> &GetFnDecl(const std::string &name) {

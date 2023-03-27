@@ -60,12 +60,6 @@ void Token::Print() const {
     case TokenKind::RCurBracket:
         std::cout << "} ";
         break;
-    case TokenKind::LSqBracket:
-        std::cout << "[ ";
-        break;
-    case TokenKind::RSqBracket:
-        std::cout << "] ";
-        break;
     case TokenKind::Equals:
         std::cout << "= ";
         break;

@@ -29,12 +29,6 @@ void BinExpr::Print(const i32 offset) {
     case Lex::TokenKind::Equals:
         std::cout << "=";
         break;
-    case Lex::TokenKind::LessThan:
-        std::cout << "<";
-        break;
-    case Lex::TokenKind::GreaterThan:
-        std::cout << ">";
-        break;
     default:
         break;
     }
@@ -75,7 +69,6 @@ std::shared_ptr<Driver::Object> BinExpr::Exec(std::shared_ptr<Driver::Scope> sco
         scope->SetValue(varName, RHS->Exec(scope));
         return scope->GetValue(varName);
     }
-    // TODO comparison
 
     auto lhsValue = LHS->Exec(scope)->Value;
     auto rhsValue = RHS->Exec(scope)->Value;

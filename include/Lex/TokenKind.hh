@@ -27,8 +27,6 @@ enum class TokenKind : i8 {
     RParen,      // )
     LCurBracket, // {
     RCurBracket, // }
-    LSqBracket,  // [
-    RSqBracket,  // ]
     Comma,       // ,
     Fullstop,    // .
     Colon,       // :
