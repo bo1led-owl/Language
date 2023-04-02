@@ -38,7 +38,6 @@ class BinExpr : public Expr {
 /// Variable reference expression class
 class VarRefExpr : public Expr {
     std::string Name;
-    // std::shared_ptr<VarDecl> Decl;
 
   public:
     VarRefExpr(const std::string &name, const std::string &type)
@@ -50,7 +49,6 @@ class VarRefExpr : public Expr {
     /// Print VarRefExpr as an AST element
     void Print(const i32 offset = 0) override;
     inline const std::string &GetName() const { return Name; }
-    // std::shared_ptr<VarDecl> GetDecl() const { return Decl; }
 };
 
 /// Function argument reference expression class

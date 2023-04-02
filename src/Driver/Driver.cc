@@ -35,7 +35,7 @@ void Driver::Run() {
             }
         }
         // exec "main"
-        const auto &type{scope->GetFnDecl("main")->GetType()};
+        const std::string &type{scope->GetFnDecl("main")->GetType()};
         if (type == "int") {
             std::cout << std::any_cast<i32>(scope->ExecFn("main")->Value);
         } else if (type == "float") {

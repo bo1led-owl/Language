@@ -93,12 +93,11 @@ std::unique_ptr<AST::Expr> Parser::ParseRefExpr() {
             }
         }
         // this must be eaten after the loop, because it is looping while CurToken is not
-        // ")" eat ")"
+        // ")"
         Advance();
 
         // too few arguments
         if (args.size() < fnRef->GetArgCount()) {
-            // too few arguments
             throw ParseException{"bad argument list for call of function \"" + name +
                                  "\": too few arguments passed"};
         }
@@ -185,8 +184,8 @@ std::unique_ptr<AST::Expr> Parser::ParseBinExpr(const i32 opPrec,
             }
             if (!var->IsMutable()) {
                 // unmutable variable
-                var->SetValue(RHS);
                 // initialize a variable
+                var->SetValue(RHS);
             }
         }
         LHS = std::make_unique<AST::BinExpr>(BinOp, std::move(LHS), std::move(RHS));
