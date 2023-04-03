@@ -29,6 +29,13 @@ std::shared_ptr<AST::Block> Parser::ParseBlock() {
         case Lex::TokenKind::RCurBracket:
             // end of the block
             break;
+        case Lex::TokenKind::Comment:
+            while (CurToken->IsNot(Lex::TokenKind::Newline)) {
+                THROW_IF_TOKEN_IS(Lex::TokenKind::EndOfInput,
+                                  "unexpected end of input, block is not closed")
+                Advance();
+            }
+            break;
         case Lex::TokenKind::Let: {
             // variable declaration
             std::shared_ptr<AST::VarDecl> decl = ParseVarDecl();

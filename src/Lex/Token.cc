@@ -75,6 +75,9 @@ void Token::Print() const {
     case TokenKind::RightArrow:
         std::cout << "-> ";
         break;
+    case TokenKind::Comment:
+        std::cout << "// ";
+        break;
     case TokenKind::Unknown:
         std::cout << "Unknown ";
         break;

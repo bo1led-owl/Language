@@ -19,6 +19,16 @@
         return std::make_unique<Token>(Kind);                                            \
     }
 
+#define REGISTER_CHAR_SEQ(Char1, Char2, SeqKind, CharKind)                               \
+    if (CurChar == Char1) {                                                              \
+        if (Advance() == Char2) {                                                        \
+            Advance();                                                                   \
+            return std::make_unique<Token>(SeqKind);                                     \
+        } else {                                                                         \
+            return std::make_unique<Token>(CharKind);                                    \
+        }                                                                                \
+    }
+
 namespace Language {
 namespace Lex {
 char Lexer::Advance() {
@@ -31,33 +41,19 @@ char Lexer::Advance() {
 }
 
 std::unique_ptr<Token> Lexer::LexToken() {
-    REGISTER_CHAR(EOF, TokenKind::EndOfInput)
-    REGISTER_CHAR('\0', TokenKind::EndOfInput)
-
-    REGISTER_CHAR('\r', TokenKind::Newline)
-    REGISTER_CHAR('\n', TokenKind::Newline)
-
     // skip spaces
-    while (isspace(CurChar)) {
+    while (CurChar == ' ' || CurChar == '\t') {
         Advance();
     }
 
-    // lexing arrows (-> and <-) separately, because they are complex symbols
-    if (CurChar == '-') {
-        if (Advance() == '>') {
-            Advance();
-            return std::make_unique<Token>(Lex::TokenKind::RightArrow);
-        }
-        return std::make_unique<Token>(Lex::TokenKind::Minus);
-    }
+    REGISTER_CHAR(EOF, TokenKind::EndOfInput)
+    REGISTER_CHAR('\0', TokenKind::EndOfInput)
 
-    if (CurChar == '<') {
-        if (Advance() == '-') {
-            Advance();
-            return std::make_unique<Token>(Lex::TokenKind::LeftArrow);
-        }
-        return std::make_unique<Token>(Lex::TokenKind::LessThan);
-    }
+    REGISTER_CHAR('\n', TokenKind::Newline)
+
+    REGISTER_CHAR_SEQ('-', '>', Lex::TokenKind::RightArrow, Lex::TokenKind::Minus)
+    REGISTER_CHAR_SEQ('<', '-', Lex::TokenKind::LeftArrow, Lex::TokenKind::LessThan)
+    REGISTER_CHAR_SEQ('/', '/', Lex::TokenKind::Comment, Lex::TokenKind::Slash)
 
     REGISTER_CHAR('(', TokenKind::LParen)
     REGISTER_CHAR(')', TokenKind::RParen)
@@ -69,7 +65,6 @@ std::unique_ptr<Token> Lexer::LexToken() {
     REGISTER_CHAR(':', TokenKind::Colon)
     REGISTER_CHAR('+', TokenKind::Plus)
     REGISTER_CHAR('*', TokenKind::Asterisk)
-    REGISTER_CHAR('/', TokenKind::Slash)
     REGISTER_CHAR('=', TokenKind::Equals)
     REGISTER_CHAR('>', TokenKind::GreaterThan)
 

@@ -47,13 +47,18 @@ std::unique_ptr<AST::VarDecl> Parser::ParseVarDecl() {
         varValue = ParseExpr();
         if (varType.empty()) {
             varType = varValue->GetType();
+        } else if (varType != varValue->GetType()) {
+            // variable and value type mismatch
+            throw ParseException{
+                "declared variable type differs from the type of its value"};
         }
     }
 
     if (CurToken->IsNot(Lex::TokenKind::Newline) &&
         CurToken->IsNot(Lex::TokenKind::EndOfInput) &&
         CurToken->IsNot(Lex::TokenKind::LCurBracket) &&
-        CurToken->IsNot(Lex::TokenKind::RCurBracket)) {
+        CurToken->IsNot(Lex::TokenKind::RCurBracket) &&
+        CurToken->IsNot(Lex::TokenKind::Comment)) {
         // unexpected token at the end of statement
         throw ParseException{"unexpected token at the end of statement"};
     }

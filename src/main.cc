@@ -1,9 +1,15 @@
 #include "Driver/Driver.hh"
 #include "Types.hh"
 
+#include <iostream>
+
 i32 main(i32 argc, char **argv) {
-    Language::Driver::Driver driver{(argc > 1) ? argv[1] : "input.txt"};
-    driver.Run();
+    if (argc > 1) {
+        Language::Driver::Driver driver{argv[1]};
+        driver.Run();
+    } else {
+        std::cerr << "No input file was provided\n";
+    }
 
     return 0;
 }

@@ -39,6 +39,7 @@ enum class TokenKind : i8 {
     GreaterThan, // >
     LeftArrow,   // <-
     RightArrow,  // ->
+    Comment,     // //
 };
 } // namespace Lex
 } // namespace Language
