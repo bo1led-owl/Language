@@ -52,6 +52,11 @@ class BlockStmt : public Stmt {
   public:
     BlockStmt(std::shared_ptr<Block> block) : Value(block) {}
 
+    std::shared_ptr<Driver::Object> Exec(std::shared_ptr<Driver::Scope> scope) override {
+        Value->Exec(scope);
+        return std::make_shared<Driver::Object>();
+    }
+
     /// Print BlockStmt as an AST element
     void Print(const i32 offset = 0) override;
     std::shared_ptr<Block> GetValue() { return Value; }
