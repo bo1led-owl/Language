@@ -81,14 +81,7 @@ class Parser {
 
     /// Returns type of the variable with given name
     std::string GetVariableType(const std::string &name) {
-        if (VariableDeclared(name)) {
-            if (!Variables.contains(name)) {
-                return CurBlock->GetVarDecl(name)->GetType();
-            } else {
-                return Variables[name]->GetType();
-            }
-        }
-        throw ParseException{"cannot find variable with name " + name};
+        return GetVarDecl(name)->GetType();
     }
 
     std::unique_ptr<AST::VarDecl> ParseVarDecl();

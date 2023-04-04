@@ -10,7 +10,7 @@
 namespace Language {
 namespace AST {
 std::shared_ptr<Driver::Object> VarDecl::Exec(std::shared_ptr<Driver::Scope> scope) {
-    const auto value{Value->Exec(scope)};
+    const auto value{(Value == nullptr) ? nullptr : Value->Exec(scope)};
     scope->SetValue(Name, value);
     return std::make_shared<Driver::Object>();
 }
@@ -30,9 +30,12 @@ void VarDecl::Print(const i32 offset) {
     }
 }
 
-void VarDecl::SetValue(std::unique_ptr<AST::Expr> &value) {
-    if (Mutable) {
-        Value = std::move(value);
+void VarDecl::SetValue(const std::string &type) {
+    if (!ValueDeclared) {
+        if (Type.empty()) {
+            Type = type;
+        }
+        ValueDeclared = true;
     } else {
         // assignment to an unmutabe variable
         throw Parse::ParseException{

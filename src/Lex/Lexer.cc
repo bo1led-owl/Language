@@ -34,9 +34,7 @@ namespace Lex {
 char Lexer::Advance() {
     if (CurChar == '\n') {
         ++CurLine;
-        CurColumn = 0;
     }
-    ++CurColumn;
     return CurChar = Input.get();
 }
 

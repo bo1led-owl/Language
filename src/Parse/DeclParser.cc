@@ -29,7 +29,7 @@ std::unique_ptr<AST::VarDecl> Parser::ParseVarDecl() {
     Advance();
 
     // variable type parsing
-    std::string varType{};
+    std::string varType;
     if (CurToken->Is(Lex::TokenKind::Colon)) {
         // eat ":"
         Advance(); // missing variable type

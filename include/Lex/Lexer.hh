@@ -15,7 +15,7 @@ class Lexer {
     std::ifstream Input;
     char CurChar;
 
-    u64 CurLine{1}, CurColumn{1};
+    u64 CurLine{1};
 
     /// Move to the next character from the input and return it
     inline char Advance();
@@ -27,7 +27,6 @@ class Lexer {
     std::unique_ptr<Token> LexToken();
 
     u64 GetCurLine() { return CurLine; }
-    u64 GetCurColumn() { return CurColumn; }
 };
 } // namespace Lex
 } // namespace Language

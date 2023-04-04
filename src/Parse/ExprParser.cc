@@ -34,6 +34,8 @@ std::unique_ptr<AST::Expr> Parser::ParsePrimaryExpr() {
     case Lex::TokenKind::Identifier:
         // variable reference or function call
         return ParseRefExpr();
+
+    case Lex::TokenKind::Fullstop:
     case Lex::TokenKind::Number:
         // integer or floating point number
         return ParseNumberExpr();
@@ -108,10 +110,10 @@ std::unique_ptr<AST::Expr> Parser::ParseRefExpr() {
     std::string varType;
     if (VariableDeclared(name)) {
         varType = GetVariableType(name);
-        if (varType.empty()) {
-            // no variable type
-            throw ParseException{"attempt to reference a variable with no type"};
-        }
+        // if (varType.empty()) {
+        // no variable type
+        // throw ParseException{"attempt to reference a variable with no type"};
+        // }
     } else if (const auto arg = CurFn->GetArgumentByName(name); arg != nullptr) {
         varType = arg->Type;
     } else {
@@ -124,9 +126,11 @@ std::unique_ptr<AST::Expr> Parser::ParseRefExpr() {
 
 std::unique_ptr<AST::Expr> Parser::ParseNumberExpr() {
     std::string number;
-    number = CurToken->GetNumberData();
-    // eat integer part of a number
-    Advance();
+    if (CurToken->Is(Lex::TokenKind::Number)) {
+        number = CurToken->GetNumberData();
+        // eat integer part of a number
+        Advance();
+    }
 
     if (CurToken->Is(Lex::TokenKind::Fullstop)) {
         // eat "."
@@ -165,7 +169,7 @@ std::unique_ptr<AST::Expr> Parser::ParseBinExpr(const i32 opPrec,
             RHS = ParseBinExpr(CurPrec + 1, std::move(RHS));
         }
 
-        if (LHS->GetType() != RHS->GetType()) {
+        if (LHS->GetType() != RHS->GetType() && !LHS->GetType().empty()) {
             // LHS and RHS type mismatch
             throw ParseException{"operand types mismatch"};
         }
@@ -182,11 +186,7 @@ std::unique_ptr<AST::Expr> Parser::ParseBinExpr(const i32 opPrec,
                 throw ParseException{"cannot find variable with name \"" +
                                      LHSExpr->GetName() + "\""};
             }
-            if (!var->IsMutable()) {
-                // unmutable variable
-                // initialize a variable
-                var->SetValue(RHS);
-            }
+            var->SetValue(RHS->GetType());
         }
         LHS = std::make_unique<AST::BinExpr>(BinOp, std::move(LHS), std::move(RHS));
     }

@@ -44,7 +44,10 @@ std::shared_ptr<AST::VarDecl> Parser::GetVarDecl(const std::string &name) {
     if (Variables.contains(name)) {
         return Variables[name];
     }
-    return CurBlock->GetVarDecl(name);
+    if (CurBlock->VariableDeclared(name)) {
+        return CurBlock->GetVarDecl(name);
+    }
+    throw ParseException{"cannot find variable with name" + name};
 }
 
 std::vector<std::shared_ptr<AST::Decl>> Parser::Parse() {
@@ -66,13 +69,11 @@ std::vector<std::shared_ptr<AST::Decl>> Parser::Parse() {
             AST.push_back(decl);
             Functions[decl->GetName()] = decl;
         } break;
-
         case Lex::TokenKind::Let: {
             std::shared_ptr<AST::VarDecl> decl{ParseVarDecl()};
             AST.push_back(decl);
             Variables[decl->GetName()] = decl;
         } break;
-
         default:
             throw ParseException{"expected function or variable declaration"};
         }

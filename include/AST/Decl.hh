@@ -18,6 +18,7 @@ class Block;
 /// Variable declaration class
 class VarDecl : public Decl {
     bool Mutable;
+    bool ValueDeclared{false};
     // value is optional
     std::unique_ptr<Expr> Value;
 
@@ -34,8 +35,9 @@ class VarDecl : public Decl {
     void Print(const i32 offset = 0) override;
 
     inline bool IsMutable() const { return Mutable; }
-    inline const std::unique_ptr<Expr> &GetValue() { return Value; }
-    void SetValue(std::unique_ptr<AST::Expr> &value);
+    inline bool HasValue() const { return ValueDeclared; }
+    // inline const std::unique_ptr<Expr> &GetValue() { return Value; }
+    void SetValue(const std::string &type);
 };
 
 /// Function declaration class

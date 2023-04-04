@@ -11,12 +11,15 @@ class Driver {
     Lex::Lexer Lexer;
     Parse::Parser Parser;
 
+    i32 ArgCount;
+    char **Args;
+
   public:
-    Driver(std::string filepath) : Lexer(Lex::Lexer{filepath}), Parser(Lexer) {}
-    Driver(Lex::Lexer lexer, Parse::Parser parser)
-        : Lexer(std::move(lexer)), Parser(std::move(parser)) {}
+    Driver(const std::string &filepath, i32 argc, char **argv)
+        : Lexer(Lex::Lexer{filepath}), Parser(Lexer), ArgCount(argc), Args(argv) {}
 
     void Run();
+    void Execute();
     void PrintTokens();
     void PrintAST();
 };
