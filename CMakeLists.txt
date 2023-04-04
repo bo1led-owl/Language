@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.15)
 project(language)
 
-set(TARGET_NAME compiler)
+set(TARGET_NAME language)
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED YES)
