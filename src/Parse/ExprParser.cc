@@ -143,9 +143,8 @@ std::unique_ptr<AST::Expr> Parser::ParseNumberExpr() {
         }
         return std::make_unique<AST::LiteralExpr<f64>>("float", std::stod(number));
     }
-
-    i32 value{std::stoi(number)};
-    return std::make_unique<AST::LiteralExpr<i32>>("int", value);
+    
+    return std::make_unique<AST::LiteralExpr<i32>>("int", std::stoi(number));
 }
 
 std::unique_ptr<AST::Expr> Parser::ParseBinExpr(const i32 opPrec,
