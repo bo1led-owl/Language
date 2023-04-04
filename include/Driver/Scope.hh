@@ -37,6 +37,10 @@ class Scope {
         Variables[name] = value;
     }
 
+    std::shared_ptr<Object> ExecFn(const std::string &name) {
+        return Functions[name]->Exec(TopParent);
+    }
+    
     std::shared_ptr<Object> ExecFn(const std::string &name,
                                    std::vector<std::shared_ptr<Object>> args) {
         std::unordered_map<std::string, std::shared_ptr<Object>> argValues;
@@ -50,10 +54,6 @@ class Scope {
 
     const std::unique_ptr<AST::FnDecl> &GetFnDecl(const std::string &name) {
         return Functions[name];
-    }
-
-    std::shared_ptr<Object> ExecFn(const std::string &name) {
-        return Functions[name]->Exec(TopParent);
     }
 
     void AddVariable(const std::string &name, std::shared_ptr<Object> value) {
