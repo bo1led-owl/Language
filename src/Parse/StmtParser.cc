@@ -87,7 +87,7 @@ std::unique_ptr<AST::Stmt> Parser::ParseStmt() {
                 throw returnTypeException;
             }
         }
-        auto expr{ParseExpr()};
+        std::unique_ptr<AST::Expr> expr{ParseExpr()};
         if (expr->GetType() == CurFn->GetType()) {
             return std::make_unique<AST::ReturnStmt>(std::move(expr));
         } else {

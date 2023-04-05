@@ -110,10 +110,6 @@ std::unique_ptr<AST::Expr> Parser::ParseRefExpr() {
     std::string varType;
     if (VariableDeclared(name)) {
         varType = GetVariableType(name);
-        // if (varType.empty()) {
-        // no variable type
-        // throw ParseException{"attempt to reference a variable with no type"};
-        // }
     } else if (const auto arg = CurFn->GetArgumentByName(name); arg != nullptr) {
         varType = arg->Type;
     } else {
@@ -143,7 +139,7 @@ std::unique_ptr<AST::Expr> Parser::ParseNumberExpr() {
         }
         return std::make_unique<AST::LiteralExpr<f64>>("float", std::stod(number));
     }
-    
+
     return std::make_unique<AST::LiteralExpr<i32>>("int", std::stoi(number));
 }
 
