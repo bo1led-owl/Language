@@ -30,18 +30,17 @@ The <i>main</i> return value is printed as the result
 C++ compiler (can be configured in main CMakeLists.txt file, default is g++), CMake
 
 # Building
-Clone the repo
+Clone the repo, then run
     
-    // debug configuration
-    cmake -DCMAKE_BUILD_TYPE=debug -B build/
-    // release configuration
-    cmake -DCMAKE_BUILD_TYPE=release -B build/
-    // build the project
+    cmake -DCMAKE_BUILD_TYPE=[debug/release] -B build/
     cmake --build build/
 
 # Executing
 Run
 
     ./build/src/language [filename]
-    // for more info run
+
+for more info run
+
     ./build/src/language --help
+
