@@ -21,12 +21,12 @@ class Token {
     inline TokenKind GetKind() const { return Kind; }
 
     virtual std::string GetNumberData() const {
-        assert("The token is a NumberToken" && Is(TokenKind::Number));
+        assert("The token is not a NumberToken" && Is(TokenKind::Number));
         return "";
     }
 
     virtual std::string GetIdentifierData() const {
-        assert("The token is an IdentifierToken" && Is(TokenKind::Identifier));
+        assert("The token is not an IdentifierToken" && Is(TokenKind::Identifier));
         return "";
     }
 
