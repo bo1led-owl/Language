@@ -67,9 +67,9 @@ std::unique_ptr<Token> Lexer::LexToken() {
     REGISTER_CHAR('>', TokenKind::GreaterThan)
 
     // lex identifiers and keywords
-    if (std::isalpha(CurChar)) {
+    if (std::isalpha(CurChar) || CurChar == '_') {
         std::string identifierString{CurChar};
-        while (std::isalnum(Advance())) {
+        while (std::isalnum(Advance()) || CurChar == '_') {
             identifierString += CurChar;
         }
 

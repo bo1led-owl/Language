@@ -153,7 +153,7 @@ std::unique_ptr<AST::Expr> Parser::ParseBinExpr(const i32 opPrec,
         // eat operator
         Advance();
 
-        auto RHS = ParsePrimaryExpr();
+        std::unique_ptr<AST::Expr> RHS = ParsePrimaryExpr();
         if (RHS == nullptr) {
             // no right operand
             throw ParseException{"expected binary operator second operand"};
@@ -164,7 +164,8 @@ std::unique_ptr<AST::Expr> Parser::ParseBinExpr(const i32 opPrec,
             RHS = ParseBinExpr(CurPrec + 1, std::move(RHS));
         }
 
-        if (LHS->GetType() != RHS->GetType() && !LHS->GetType().empty()) {
+        if (LHS->GetType() != RHS->GetType() &&
+            !(LHS->GetType().empty() && BinOp == Lex::TokenKind::Equals)) {
             // LHS and RHS type mismatch
             throw ParseException{"operand types mismatch"};
         }

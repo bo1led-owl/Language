@@ -53,11 +53,10 @@ void Driver::Execute() {
         // exec "main"
         const std::string &type{scope->GetFnDecl("main")->GetType()};
         if (type == "int") {
-            std::cout << std::any_cast<i32>(scope->ExecFn("main")->Value);
+            std::cout << std::any_cast<i32>(scope->ExecFn("main")->Value) << '\n';
         } else if (type == "float") {
-            std::cout << std::any_cast<f64>(scope->ExecFn("main")->Value);
+            std::cout << std::any_cast<f64>(scope->ExecFn("main")->Value) << '\n';
         }
-        std::cout << '\n';
     } catch (const Parse::ParseException &e) {
         std::cout << "Error on line " << Lexer.GetCurLine() << ":\n" << e.what() << '\n';
         return;
