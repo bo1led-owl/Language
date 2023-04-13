@@ -26,9 +26,6 @@ A programming language school project
 
 The <i>main</i> return value is printed as the result
 
-# Requirements
-C++ compiler (can be configured in main CMakeLists.txt file, default is g++), CMake
-
 # Building
 Clone the repo, then run
     
